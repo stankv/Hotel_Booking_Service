@@ -41,7 +41,7 @@ hotels = [
 
 @app.get("/hotels")
 def get_hotels(
-        id: int | None = Query(None, description="Айдишник"),
+        id: int | None = Query(None, description="ID отеля"),
         title: str | None = Query(None, description="Название отеля"),
 ):
     hotels_ = []
@@ -68,41 +68,38 @@ def create_hotel(
 
 @app.put("/hotels/{hotel_id}")
 def update_hotel(
-        id: int = Body(embed=True),
+        hotel_id: int,
         title: str = Body(embed=True),
         name: str = Body(embed=True),
 ):
     global hotels
-    hotels = [
-        hotel if hotel["id"] != id else {
-            "id": id,
-            "title": title,
-            "name": name
-        }
-        for hotel in hotels
-    ]
+    for hotel in hotels:
+        if hotel["id"] == hotel_id:
+            hotel["title"] = title
+            hotel["name"] = name
+            break
     return {"status": "OK"}
 
 
-@app.patch("/hotels/{hotel_id}")
-def patch_hotel(
-        id: int = Body(embed=True),
+@app.patch("/hotels/{hotel_id}",
+           summary="Частичное изменение данных отеля",
+           description="Можно изменить title, а можно name"
+           )
+def partially_update_hotel(
+        id: int,
         title: str | None = Body(None, embed=True, description="Название отеля"),
         name: str | None = Body(None, embed=True, description="транскрипция названия отеля"),
 ):
     global hotels
     if title is None and name is None:
         return {"status": "Data not changed"}
-    hotels = [
-        hotel if hotel["id"] != id else {
-            **hotel,
-            **{
-                "title": title if title else hotel["title"],
-                "name": name if name else hotel["name"],
-            }
-        }
-        for hotel in hotels
-    ]
+    for hotel in hotels:
+        if hotel["id"] == id:
+            if title is not None and title != "string":
+                hotel["title"] = title
+            if name is not None and name != "string":
+                hotel["name"] = name
+            break
     return {"status": "OK"}
 
 
