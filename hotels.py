@@ -1,4 +1,5 @@
 from fastapi import Query, Body, APIRouter
+from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/hotels", tags=["Отели"])
 
@@ -26,19 +27,26 @@ def get_hotels(
     return hotels_
 
 
+class Hotel(BaseModel):
+    title: str
+    name: str
+
+
+class HotelPATCH(BaseModel):
+    title: str | None = Field(None)
+    name: str | None = Field(None)
+
+
 @router.post("",
              summary="Добавление нового отеля",
              description="<h1>Ввод title И name обязателен</h1>"
              )
-def create_hotel(
-        title: str = Body(embed=True, description="Название отеля"),
-        name: str = Body(embed=True, description="транскрипция названия отеля"),
-):
+def create_hotel(hotel_data: Hotel):
     global hotels
     hotels.append({
         "id": hotels[-1]["id"] + 1,
-        "title": title,
-        "name": name
+        "title": hotel_data.title,
+        "name": hotel_data.name
     })
     return {"status": "OK"}
 
@@ -47,16 +55,12 @@ def create_hotel(
             summary="Изменение ВСЕХ данных отеля",
             description="<h1>Ввод title И name обязателен</h1>"
             )
-def update_hotel(
-        hotel_id: int,
-        title: str = Body(embed=True),
-        name: str = Body(embed=True),
-):
+def update_hotel(hotel_id: int, hotel_data: Hotel):
     global hotels
     for hotel in hotels:
         if hotel["id"] == hotel_id:
-            hotel["title"] = title
-            hotel["name"] = name
+            hotel["title"] = hotel_data.title
+            hotel["name"] = hotel_data.name
             break
     return {"status": "OK"}
 
@@ -65,20 +69,16 @@ def update_hotel(
            summary="Частичное изменение данных отеля",
            description="<h1>Можно изменить title, а можно name</h1>"
            )
-def partially_update_hotel(
-        id: int,
-        title: str | None = Body(None, embed=True, description="Название отеля"),
-        name: str | None = Body(None, embed=True, description="транскрипция названия отеля"),
-):
+def partially_update_hotel(id: int, hotel_data: HotelPATCH):
     global hotels
-    if title is None and name is None:
+    if hotel_data.title is None and hotel_data.name is None:
         return {"status": "Data not changed"}
     for hotel in hotels:
         if hotel["id"] == id:
-            if title is not None and title != "string":
-                hotel["title"] = title
-            if name is not None and name != "string":
-                hotel["name"] = name
+            if hotel_data.title is not None and hotel_data.title != "string":
+                hotel["title"] = hotel_data.title
+            if hotel_data.name is not None and hotel_data.name != "string":
+                hotel["name"] = hotel_data.name
             break
     return {"status": "OK"}
 
