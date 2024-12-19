@@ -1,5 +1,5 @@
-from fastapi import Query, Body, APIRouter
-from pydantic import BaseModel, Field
+from fastapi import Query, APIRouter
+from schemas.hotels import Hotel, HotelPATCH
 
 router = APIRouter(prefix="/hotels", tags=["Отели"])
 
@@ -25,16 +25,6 @@ def get_hotels(
             continue
         hotels_.append(hotel)
     return hotels_
-
-
-class Hotel(BaseModel):
-    title: str
-    name: str
-
-
-class HotelPATCH(BaseModel):
-    title: str | None = Field(None)
-    name: str | None = Field(None)
 
 
 @router.post("",
