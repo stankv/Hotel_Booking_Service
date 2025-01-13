@@ -2,6 +2,7 @@ alembic==1.14.0
 annotated-types==0.7.0
 anyio==4.7.0
 astroid==3.3.6
+asyncpg==0.30.0
 certifi==2024.8.30
 click==8.1.7
 dill==0.3.9
