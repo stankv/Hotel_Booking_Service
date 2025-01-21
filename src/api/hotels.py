@@ -5,27 +5,32 @@ from src.api.dependencies import PaginationDep
 from src.database import async_session_maker, engine
 from src.models.hotels import HotelsOrm
 from sqlalchemy import insert, select
+from sqlalchemy import func
 
 router = APIRouter(prefix="/hotels", tags=["Отели"])
 
 
 @router.get("",
             summary="Получение ВСЕХ отелей / конкретного отеля",
-            description="<h1>Все отели: поля ввода ID и title пусты<br>"
+            description="<h1>Все отели: поля ввода title и location пусты<br>"
                         "Конкретный отель: поиск по любому полю</h1>"
             )
 async def get_hotels(
         pagination: PaginationDep,
-        id: int | None = Query(None, description="ID отеля"),
         title: str | None = Query(None, description="Название отеля"),
+        location: str | None = Query(None, description=" Адрес отеля"),
 ):
     per_page = pagination.per_page or 5
     async with async_session_maker() as session:
         query = select(HotelsOrm)
-        if id:
-            query = query.filter_by(id=id)
         if title:
-            query = query.filter_by(title=title)
+            #query = query.filter_by(title=title)
+            #query = query.filter(HotelsOrm.title.like(f'%{title}%'))
+            query = query.filter(func.lower(HotelsOrm.title).like(f'%{title.lower()}%'))
+        if location:
+            #query = query.filter_by(location=location)
+            #query = query.filter(HotelsOrm.location.like(f'%{location}%'))
+            query = query.filter(func.lower(HotelsOrm.location).like(f'%{location.lower()}%'))
         query = (
             query
             .limit(per_page)
