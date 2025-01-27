@@ -1,4 +1,6 @@
 from fastapi import Query, APIRouter, Body
+
+from repositories.hotels import HotelsRepository
 from src.schemas.hotels import Hotel, HotelPATCH
 from src.api.dependencies import PaginationDep
 
@@ -19,21 +21,22 @@ async def get_hotels(
         title: str | None = Query(None, description="Название отеля"),
         location: str | None = Query(None, description=" Адрес отеля"),
 ):
-    per_page = pagination.per_page or 5
+    # per_page = pagination.per_page or 5
     async with async_session_maker() as session:
-        query = select(HotelsOrm)
-        if title:
-            query = query.filter(func.lower(HotelsOrm.title).contains(title.strip().lower()))
-        if location:
-            query = query.filter(func.lower(HotelsOrm.location).contains(location.strip().lower()))
-        query = (
-            query
-            .limit(per_page)
-            .offset((pagination.page - 1) * per_page)
-        )
-        result = await session.execute(query)
-        hotels = result.scalars().all()
-        return hotels
+        return await HotelsRepository(session).get_all()
+    #     query = select(HotelsOrm)
+    #     if title:
+    #         query = query.filter(func.lower(HotelsOrm.title).contains(title.strip().lower()))
+    #     if location:
+    #         query = query.filter(func.lower(HotelsOrm.location).contains(location.strip().lower()))
+    #     query = (
+    #         query
+    #         .limit(per_page)
+    #         .offset((pagination.page - 1) * per_page)
+    #     )
+    #     result = await session.execute(query)
+    #     hotels = result.scalars().all()
+    #     return hotels
     # if pagination.page and pagination.per_page:
     #     start = (pagination.page - 1) * pagination.per_page
     #     end = start + pagination.per_page
