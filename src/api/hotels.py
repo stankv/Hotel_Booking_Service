@@ -6,7 +6,7 @@ from src.api.dependencies import PaginationDep
 
 from src.database import async_session_maker, engine
 from src.models.hotels import HotelsOrm
-from sqlalchemy import insert
+from sqlalchemy import insert, select, func
 
 router = APIRouter(prefix="/hotels", tags=["Отели"])
 
@@ -29,11 +29,6 @@ async def get_hotels(
             limit=per_page,
             offset=(pagination.page - 1) * per_page
         )
-    # if pagination.page and pagination.per_page:
-    #     start = (pagination.page - 1) * pagination.per_page
-    #     end = start + pagination.per_page
-    #     hotels_ = hotels_[start:end]
-    # return hotels_
 
 
 @router.post("",
@@ -58,11 +53,8 @@ async def create_hotel(hotel_data: Hotel = Body(openapi_examples={
 })
 ):
     async with async_session_maker() as session:
-        # add_hotel_stmt = insert(HotelsOrm).values(**hotel_data.model_dump())
-        # print(add_hotel_stmt.compile(engine, compile_kwargs={"literal_binds": True}))
-        # await session.execute(add_hotel_stmt)
-        hotel = await HotelsRepository(session).add()
-        await session.commit()    # отсюда не убирать!!!
+        hotel = await HotelsRepository(session).add(hotel_data)
+        await session.commit()
     return {"status": "OK", "data": hotel}
 
 
