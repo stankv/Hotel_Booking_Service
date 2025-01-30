@@ -60,15 +60,12 @@ async def create_hotel(hotel_data: Hotel = Body(openapi_examples={
 
 @router.put("/{hotel_id}",
             summary="Изменение ВСЕХ данных отеля",
-            description="<h1>Ввод title И name обязателен</h1>"
+            description="<h1>Ввод title И location обязателен</h1>"
             )
-def update_hotel(hotel_id: int, hotel_data: Hotel):
-    global hotels
-    for hotel in hotels:
-        if hotel["id"] == hotel_id:
-            hotel["title"] = hotel_data.title
-            hotel["name"] = hotel_data.name
-            break
+async def update_hotel(hotel_id: int, hotel_data: Hotel):
+    async with async_session_maker() as session:
+        await HotelsRepository(session).edit(hotel_data, id=hotel_id)
+        await session.commit()
     return {"status": "OK"}
 
 
@@ -77,23 +74,23 @@ def update_hotel(hotel_id: int, hotel_data: Hotel):
            description="<h1>Можно изменить title, а можно name</h1>"
            )
 def partially_update_hotel(id: int, hotel_data: HotelPATCH):
-    global hotels
-    if hotel_data.title is None and hotel_data.name is None:
+    if hotel_data.title is None and hotel_data.location is None:
         return {"status": "Data not changed"}
-    for hotel in hotels:
-        if hotel["id"] == id:
-            if hotel_data.title is not None and hotel_data.title != "string":
-                hotel["title"] = hotel_data.title
-            if hotel_data.name is not None and hotel_data.name != "string":
-                hotel["name"] = hotel_data.name
-            break
+    # for hotel in hotels:
+    #     if hotel["id"] == id:
+    #         if hotel_data.title is not None and hotel_data.title != "string":
+    #             hotel["title"] = hotel_data.title
+    #         if hotel_data.name is not None and hotel_data.name != "string":
+    #             hotel["name"] = hotel_data.name
+    #         break
     return {"status": "OK"}
 
 
 @router.delete("/{hotel_id}",
                summary="Удаление отеля",
                description="<h1>Удаление отеля</h1>")
-def delete_hotel(hotel_id: int):
-    global hotels
-    hotels = [hotel for hotel in hotels if hotel["id"] != hotel_id]
+async def delete_hotel(hotel_id: int):
+    async with async_session_maker() as session:
+        await HotelsRepository(session).delete(id=hotel_id)
+        await session.commit()
     return {"status": "OK"}
