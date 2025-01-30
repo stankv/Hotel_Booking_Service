@@ -4,9 +4,8 @@ from repositories.hotels import HotelsRepository
 from src.schemas.hotels import Hotel, HotelPATCH
 from src.api.dependencies import PaginationDep
 
-from src.database import async_session_maker, engine
-from src.models.hotels import HotelsOrm
-from sqlalchemy import insert, select, func
+from src.database import async_session_maker
+
 
 router = APIRouter(prefix="/hotels", tags=["Отели"])
 
@@ -71,18 +70,14 @@ async def update_hotel(hotel_id: int, hotel_data: Hotel):
 
 @router.patch("/{hotel_id}",
            summary="Частичное изменение данных отеля",
-           description="<h1>Можно изменить title, а можно name</h1>"
+           description="<h1>Можно изменить title, а можно location</h1>"
            )
-def partially_update_hotel(id: int, hotel_data: HotelPATCH):
+async def partially_update_hotel(hotel_id: int, hotel_data: HotelPATCH):
     if hotel_data.title is None and hotel_data.location is None:
         return {"status": "Data not changed"}
-    # for hotel in hotels:
-    #     if hotel["id"] == id:
-    #         if hotel_data.title is not None and hotel_data.title != "string":
-    #             hotel["title"] = hotel_data.title
-    #         if hotel_data.name is not None and hotel_data.name != "string":
-    #             hotel["name"] = hotel_data.name
-    #         break
+    async with async_session_maker() as session:
+        await HotelsRepository(session).edit(hotel_data, exclude_unset=True, id=hotel_id)
+        await session.commit()
     return {"status": "OK"}
 
 
