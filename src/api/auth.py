@@ -43,9 +43,14 @@ async def register_user(
         return {"status": "OK"}
 
 
-@router.get("/only_auth")
-async def only_auth(request: Request):
-    access_token = request.cookies.get("access_token")
-    if access_token:
-        return access_token
-    return None
+@router.get("/only_auth",
+            summary="Получение данных пользователя",
+            description="<h1>Получение данных пользователя из JWT-токена</h1>"
+            )
+async def only_auth(request: Request) -> dict | None:
+    access_token = request.cookies.get("access_token", None)
+    data = AuthService().decode_token(access_token)
+    user_id = data["user_id"]
+    async with async_session_maker() as session:
+        user = await UsersRepository(session).get_one_or_none(id=user_id)
+        return user
