@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException, Response, Request
+from fastapi import APIRouter, HTTPException, Response
 
 from src.repositories.users import UsersRepository
 from src.database import async_session_maker
 from src.schemas.users import UserRequestAdd, UserAdd
 from src.services.auth import AuthService
+from src.api.dependencies import UserIdDep
 
 
 router = APIRouter(prefix="/auth", tags=["Авторизация и аутентификация"])
@@ -43,14 +44,11 @@ async def register_user(
         return {"status": "OK"}
 
 
-@router.get("/only_auth",
-            summary="Получение данных пользователя",
-            description="<h1>Получение данных пользователя из JWT-токена</h1>"
+@router.get("/me",
+            summary="Получение данных текущего пользователя",
+            description="<h1>Получение данных текущего пользователя из JWT-токена</h1>"
             )
-async def only_auth(request: Request) -> dict | None:
-    access_token = request.cookies.get("access_token", None)
-    data = AuthService().decode_token(access_token)
-    user_id = data["user_id"]
+async def get_me(user_id: UserIdDep):
     async with async_session_maker() as session:
         user = await UsersRepository(session).get_one_or_none(id=user_id)
         return user
