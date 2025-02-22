@@ -1,7 +1,7 @@
 from fastapi import Query, APIRouter, Body
 
 from src.repositories.hotels import HotelsRepository
-from src.schemas.hotels import HotelPATCH, HotelAdd
+from src.schemas.hotels import HotelPatch, HotelAdd
 from src.api.dependencies import PaginationDep
 
 from src.database import async_session_maker
@@ -81,7 +81,7 @@ async def update_hotel(hotel_id: int, hotel_data: HotelAdd):
            summary="Частичное изменение данных отеля",
            description="<h1>Можно изменить title, а можно location</h1>"
            )
-async def partially_update_hotel(hotel_id: int, hotel_data: HotelPATCH):
+async def partially_update_hotel(hotel_id: int, hotel_data: HotelPatch):
     if hotel_data.title is None and hotel_data.location is None:
         return {"status": "Data not changed"}
     async with async_session_maker() as session:
