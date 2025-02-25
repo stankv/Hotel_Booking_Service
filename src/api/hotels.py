@@ -1,10 +1,7 @@
 from fastapi import Query, APIRouter, Body
 
-from src.repositories.hotels import HotelsRepository
 from src.schemas.hotels import HotelPatch, HotelAdd
 from src.api.dependencies import PaginationDep, DBDep
-
-from src.database import async_session_maker
 
 
 router = APIRouter(prefix="/hotels", tags=["Отели"])
@@ -34,16 +31,17 @@ async def get_hotels(
             summary="Получение отеля по его ID",
             description="<h1>Получение отеля по его ID</h1>"
             )
-async def get_hotel(hotel_id: int):
-    async with async_session_maker() as session:
-        return await HotelsRepository(session).get_one_or_none(id=hotel_id)
+async def get_hotel(hotel_id: int, db: DBDep):
+    return await db.hotels.get_one_or_none(id=hotel_id)
 
 
 @router.post("",
              summary="Добавление нового отеля",
              description="<h1>Ввод title И location обязателен</h1>"
              )
-async def create_hotel(hotel_data: HotelAdd = Body(openapi_examples={
+async def create_hotel(
+        db: DBDep,
+        hotel_data: HotelAdd = Body(openapi_examples={
     "1": {
         "summary": "Сочи",
         "value": {
@@ -60,9 +58,8 @@ async def create_hotel(hotel_data: HotelAdd = Body(openapi_examples={
     }
 })
 ):
-    async with async_session_maker() as session:
-        hotel = await HotelsRepository(session).add(hotel_data)
-        await session.commit()
+    hotel = await db.hotels.add(hotel_data)
+    await db.commit()
     return {"status": "OK", "data": hotel}
 
 
@@ -70,10 +67,9 @@ async def create_hotel(hotel_data: HotelAdd = Body(openapi_examples={
             summary="Изменение ВСЕХ данных отеля",
             description="<h1>Ввод title И location обязателен</h1>"
             )
-async def update_hotel(hotel_id: int, hotel_data: HotelAdd):
-    async with async_session_maker() as session:
-        await HotelsRepository(session).edit(hotel_data, id=hotel_id)
-        await session.commit()
+async def update_hotel(hotel_id: int, hotel_data: HotelAdd, db: DBDep):
+    await db.hotels.edit(hotel_data, id=hotel_id)
+    await db.commit()
     return {"status": "OK"}
 
 
@@ -81,20 +77,18 @@ async def update_hotel(hotel_id: int, hotel_data: HotelAdd):
            summary="Частичное изменение данных отеля",
            description="<h1>Можно изменить title, а можно location</h1>"
            )
-async def partially_update_hotel(hotel_id: int, hotel_data: HotelPatch):
+async def partially_update_hotel(hotel_id: int, hotel_data: HotelPatch, db: DBDep):
     if hotel_data.title is None and hotel_data.location is None:
         return {"status": "Data not changed"}
-    async with async_session_maker() as session:
-        await HotelsRepository(session).edit(hotel_data, exclude_unset=True, id=hotel_id)
-        await session.commit()
+    await db.hotels.edit(hotel_data, exclude_unset=True, id=hotel_id)
+    await db.commit()
     return {"status": "OK"}
 
 
 @router.delete("/{hotel_id}",
                summary="Удаление отеля",
                description="<h1>Удаление отеля</h1>")
-async def delete_hotel(hotel_id: int):
-    async with async_session_maker() as session:
-        await HotelsRepository(session).delete(id=hotel_id)
-        await session.commit()
+async def delete_hotel(hotel_id: int, db: DBDep):
+    await db.hotels.delete(id=hotel_id)
+    await db.commit()
     return {"status": "OK"}

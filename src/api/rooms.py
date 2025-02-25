@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Body
-from src.database import async_session_maker
-from src.repositories.rooms import RoomsRepository
 from src.schemas.rooms import RoomAdd, RoomAddRequest, RoomPatchRequest, RoomPatch
+from src.api.dependencies import DBDep
 
 router = APIRouter(prefix="/hotels", tags=["Номера"])
 
@@ -10,29 +9,26 @@ router = APIRouter(prefix="/hotels", tags=["Номера"])
             summary="Получение ВСЕХ номеров конкретного отеля",
             description="<h1>Все номера по конкретному id отеля</h1>"
             )
-async def get_rooms(hotel_id: int):
-    async with async_session_maker() as session:
-        return await RoomsRepository(session).get_filtered(hotel_id=hotel_id)
+async def get_rooms(hotel_id: int, db: DBDep):
+    return await db.rooms.get_filtered(hotel_id=hotel_id)
 
 
 @router.get("/{hotel_id}/rooms/{room_id}",
             summary="Получение номера по его ID",
             description="<h1>Получение номера по его ID</h1>"
             )
-async def get_room(hotel_id: int, room_id: int):
-    async with async_session_maker() as session:
-        return await RoomsRepository(session).get_one_or_none(id=room_id, hotel_id=hotel_id)
+async def get_room(hotel_id: int, room_id: int, db: DBDep):
+    return await db.rooms.get_one_or_none(id=room_id, hotel_id=hotel_id)
 
 
 @router.post("/{hotel_id}/rooms",
              summary="Добавление нового номера",
              description="<h1>Добавление нового номера</h1>"
              )
-async def create_room(hotel_id: int, room_data: RoomAddRequest = Body()):
+async def create_room(hotel_id: int, db: DBDep, room_data: RoomAddRequest = Body()):
     _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
-    async with async_session_maker() as session:
-        room = await RoomsRepository(session).add(_room_data)
-        await session.commit()
+    room = await db.rooms.add(_room_data)
+    await db.commit()
     return {"status": "OK", "data": room}
 
 
@@ -40,11 +36,10 @@ async def create_room(hotel_id: int, room_data: RoomAddRequest = Body()):
             summary="Изменение ВСЕХ данных номера",
             description="<h1>Ввод данных для всех полей обязателен</h1>"
             )
-async def update_room(hotel_id: int, room_id: int, room_data: RoomAddRequest):
+async def update_room(hotel_id: int, room_id: int, room_data: RoomAddRequest, db: DBDep):
     _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
-    async with async_session_maker() as session:
-        await RoomsRepository(session).edit(_room_data, id=room_id)
-        await session.commit()
+    await db.rooms.edit(_room_data, id=room_id)
+    await db.commit()
     return {"status": "OK"}
 
 
@@ -52,19 +47,17 @@ async def update_room(hotel_id: int, room_id: int, room_data: RoomAddRequest):
            summary="Частичное изменение данных номера",
            description="<h1>Можно изменить любое поле</h1>"
            )
-async def partially_update_room(hotel_id: int, room_id: int, room_data: RoomPatchRequest):
+async def partially_update_room(hotel_id: int, room_id: int, room_data: RoomPatchRequest, db: DBDep):
     _room_data = RoomPatch(hotel_id=hotel_id, **room_data.model_dump(exclude_unset=True))
-    async with async_session_maker() as session:
-        await RoomsRepository(session).edit(_room_data, exclude_unset=True, id=room_id, hotel_id=hotel_id)
-        await session.commit()
+    await db.rooms.edit(_room_data, exclude_unset=True, id=room_id, hotel_id=hotel_id)
+    await db.commit()
     return {"status": "OK"}
 
 
 @router.delete("/{hotel_id}/rooms/{room_id}",
                summary="Удаление номера",
                description="<h1>Удаление номера по его id у конкретного отеля</h1>")
-async def delete_room(hotel_id: int, room_id: int):
-    async with async_session_maker() as session:
-        await RoomsRepository(session).delete(id=room_id, hotel_id=hotel_id)
-        await session.commit()
+async def delete_room(hotel_id: int, room_id: int, db: DBDep):
+    await db.rooms.delete(id=room_id, hotel_id=hotel_id)
+    await db.commit()
     return {"status": "OK"}
