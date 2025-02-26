@@ -1,8 +1,8 @@
-from src.repositories.base import BaseRepository
 from src.models.bookings import BookingsOrm
-from src.schemas.bookings import Bookings
+from src.repositories.base import BaseRepository
+from src.schemas.bookings import Booking
 
 
-class RoomsRepository(BaseRepository):
+class BookingsRepository(BaseRepository):
     model = BookingsOrm
-    schema = Bookings
+    schema = Booking
