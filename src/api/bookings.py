@@ -9,16 +9,21 @@ router = APIRouter(prefix="/bookings", tags=["Бронирование номе�
             summary="Получение ВСЕХ бронирований",
             description="<h1>Все бронирования</h1><br>"
             )
-async def get_bookings(
-        pagination: PaginationDep,
-        db: DBDep,
-):
-    per_page = pagination.per_page or 5
-    return await db.bookings.get_all(offset=(pagination.page - 1) * per_page)
+async def get_bookings(db: DBDep):
+    return await db.bookings.get_all()
+
+
+@router.get("/me",
+            summary="Получение бронирований пользователя",
+            description="<h1>Все бронирования пользователя</h1>"
+                        "<h2>(нужно авторизоваться)</h2>"
+            )
+async def get_my_bookings(user_id: UserIdDep, db: DBDep):
+    return await db.bookings.get_filtered(user_id=user_id)
 
 
 @router.post("",
-             summary="<Бронирование номера",
+             summary="Бронирование номера",
              description="<h1>Добавление бронирования</h1><br>"
              )
 async def add_booking(
