@@ -1,11 +1,26 @@
 from fastapi import APIRouter
 
 from src.schemas.bookings import BookingAddRequest, BookingAdd
-from src.api.dependencies import DBDep, UserIdDep
+from src.api.dependencies import DBDep, UserIdDep, PaginationDep
 
 router = APIRouter(prefix="/bookings", tags=["Бронирование номеров"])
 
-@router.post("")
+@router.get("",
+            summary="Получение ВСЕХ бронирований",
+            description="<h1>Все бронирования</h1><br>"
+            )
+async def get_bookings(
+        pagination: PaginationDep,
+        db: DBDep,
+):
+    per_page = pagination.per_page or 5
+    return await db.bookings.get_all(offset=(pagination.page - 1) * per_page)
+
+
+@router.post("",
+             summary="<Бронирование номера",
+             description="<h1>Добавление бронирования</h1><br>"
+             )
 async def add_booking(
         user_id: UserIdDep,
         db: DBDep,
