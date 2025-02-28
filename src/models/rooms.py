@@ -12,4 +12,4 @@ class RoomsOrm(Base):
     title: Mapped[str]
     description: Mapped[str | None]
     price: Mapped[int]
-    quanity: Mapped[int]
+    quantity: Mapped[int]
