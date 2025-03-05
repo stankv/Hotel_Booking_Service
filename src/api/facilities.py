@@ -20,15 +20,7 @@ async def get_facilities(db: DBDep):
              )
 async def create_facility(
         db: DBDep,
-        facility_data: FacilityAdd = Body(openapi_examples={
-    "1": {
-        "title": "Бесплатный Wi-Fi",
-    },
-    "2": {
-        "title": "Кондиционер",
-    }
-    }
-)):
+        facility_data: FacilityAdd = Body()):
     facility = await db.facilities.add(facility_data)
     await db.commit()
     return {"status": "OK", "data": facility}
