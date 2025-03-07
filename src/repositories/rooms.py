@@ -25,3 +25,13 @@ class RoomsRepository(BaseRepository):
         )
         result = await self.session.execute(query)
         return [RoomWithRelationships.model_validate(r) for r in result.unique().scalars().all()]
+
+
+    async  def get_room_with_facilities(self, room_id: int, hotel_id: int):
+        query = (
+            select(self.model)
+            .options(joinedload(self.model.facilities))
+            .filter(RoomsOrm.hotel_id == hotel_id, RoomsOrm.id == room_id)
+        )
+        result = await self.session.execute(query)
+        return RoomWithRelationships.model_validate(result.unique().scalars().one_or_none())
