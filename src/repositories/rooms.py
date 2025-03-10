@@ -27,11 +27,14 @@ class RoomsRepository(BaseRepository):
         return [RoomWithRelationships.model_validate(r) for r in result.unique().scalars().all()]
 
 
-    async  def get_room_with_facilities(self, room_id: int, hotel_id: int):
+    async def get_one_or_none_with_relationships(self, **filter_by):
         query = (
             select(self.model)
-            .options(joinedload(self.model.facilities))
-            .filter(RoomsOrm.hotel_id == hotel_id, RoomsOrm.id == room_id)
+            .options(selectinload(self.model.facilities))
+            .filter_by(**filter_by)
         )
         result = await self.session.execute(query)
-        return RoomWithRelationships.model_validate(result.unique().scalars().one_or_none())
+        model = result.scalars().one_or_none()
+        if model is None:
+            return None
+        return RoomWithRelationships.model_validate(model)
