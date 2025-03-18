@@ -7,6 +7,9 @@ from fastapi.openapi.docs import (
     get_swagger_ui_html,
     get_swagger_ui_oauth2_redirect_html,
 )
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+
 import sys
 from pathlib import Path
 
@@ -20,14 +23,15 @@ from src.api.rooms import router as router_rooms
 from src.api.bookings import router as router_bookings
 from src.api.facilities import router as router_facilities
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # При старте приложения
     await redis_manager.connect()
+    FastAPICache.init(RedisBackend(redis_manager.redis), prefix="fastapi-cache")
     yield
     # При выключении/перезагрузке приложения
     await redis_manager.close()
-
 
 # --------------------------------------------------------------------------------------
 # решение проблемы нкорректной работы документации
@@ -63,8 +67,6 @@ async def redoc_html():
         redoc_js_url="https://unpkg.com/redoc@next/bundles/redoc.standalone.js",
     )
 #--------------------------------------------------------------------------------------
-
-
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
