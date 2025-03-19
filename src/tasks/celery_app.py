@@ -9,3 +9,10 @@ celery_instance = Celery(
         "src.tasks.tasks"         # задаем путь к таскам
     ],
 )
+
+celery_instance.conf.beat_schedule = {
+    "luboe_nazvanie": {
+        "task": "booking_today_checkin",  # псевдоним запускаемой ф-ии из tasks.py
+        "schedule": 5,                    # период запусков, сек
+    }
+}
