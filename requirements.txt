@@ -114,6 +114,8 @@ pyproject_hooks==1.0.0
 pyrsistent==0.20.0
 pyserial==3.5
 pytest==8.3.5
+pytest-asyncio==0.26.0
+pytest-dotenv==0.5.2
 python-apt==2.7.7+ubuntu4
 python-dateutil==2.8.2
 python-debian==0.1.49+ubuntu2
