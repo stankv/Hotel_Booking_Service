@@ -2,6 +2,7 @@ from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+
 class Settings(BaseSettings):
     MODE: Literal["TEST", "LOCAL", "DEV", "PROD"]
 
@@ -17,7 +18,7 @@ class Settings(BaseSettings):
     @property
     def REDIS_URL(self):
         """Адрес брокера"""
-        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"    # если есть юзер то указать их впереди как ниже
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"  # если есть юзер то указать их впереди как ниже
 
     @property
     def DB_URL(self):
@@ -28,5 +29,6 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int
 
     model_config = SettingsConfigDict(env_file=".env")
+
 
 settings = Settings()

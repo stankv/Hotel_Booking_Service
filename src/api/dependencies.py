@@ -9,10 +9,14 @@ from src.utils.db_manager import DBManager
 
 class PaginationParams(BaseModel):
     page: Annotated[int | None, Query(1, gt=0, description="Номер страницы")]
-    per_page: Annotated[int | None, Query(None, gt=0, lt=30, description="Количество элементов на странице")]
+    per_page: Annotated[
+        int | None,
+        Query(None, gt=0, lt=30, description="Количество элементов на странице"),
+    ]
 
 
 PaginationDep = Annotated[PaginationParams, Depends()]
+
 
 def get_token(request: Request) -> str:
     token = request.cookies.get("access_token", None)

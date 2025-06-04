@@ -15,7 +15,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from src.init import redis_manager    # from src.init import redis_manager
+from src.init import redis_manager  # from src.init import redis_manager
 from src.api.auth import router as router_auth
 from src.api.hotels import router as router_hotels
 from src.api.rooms import router as router_rooms
@@ -32,6 +32,7 @@ async def lifespan(app: FastAPI):
     yield
     # При выключении/перезагрузке приложения
     await redis_manager.close()
+
 
 # --------------------------------------------------------------------------------------
 # решение проблемы нкорректной работы документации
@@ -56,9 +57,11 @@ async def custom_swagger_ui_html():
         swagger_css_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css",
     )
 
+
 @app.get(app.swagger_ui_oauth2_redirect_url, include_in_schema=False)
 async def swagger_ui_redirect():
     return get_swagger_ui_oauth2_redirect_html()
+
 
 @app.get("/redoc", include_in_schema=False)
 async def redoc_html():
@@ -67,7 +70,9 @@ async def redoc_html():
         title=app.title + " - ReDoc",
         redoc_js_url="https://unpkg.com/redoc@next/bundles/redoc.standalone.js",
     )
-#--------------------------------------------------------------------------------------
+
+
+# --------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
