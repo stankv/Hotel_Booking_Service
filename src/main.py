@@ -28,7 +28,7 @@ from src.api.images import router as router_images
 async def lifespan(app: FastAPI):
     # При старте приложения
     await redis_manager.connect()
-    FastAPICache.init(RedisBackend(redis_manager.redis), prefix="fastapi-cache")
+    FastAPICache.init(RedisBackend(redis_manager._redis), prefix="fastapi-cache")
     yield
     # При выключении/перезагрузке приложения
     await redis_manager.close()
@@ -50,15 +50,15 @@ app.include_router(router_images)
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
     return get_swagger_ui_html(
-        openapi_url=app.openapi_url,
-        title=app.title + " - Swagger UI",
-        oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
+        openapi_url=app.openapi_url,    # type: ignore
+        title=app.title + " - Swagger UI",    # type: ignore
+        oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,    # type: ignore
         swagger_js_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js",
         swagger_css_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css",
     )
 
 
-@app.get(app.swagger_ui_oauth2_redirect_url, include_in_schema=False)
+@app.get(app.swagger_ui_oauth2_redirect_url, include_in_schema=False)    # type: ignore
 async def swagger_ui_redirect():
     return get_swagger_ui_oauth2_redirect_html()
 
@@ -66,8 +66,8 @@ async def swagger_ui_redirect():
 @app.get("/redoc", include_in_schema=False)
 async def redoc_html():
     return get_redoc_html(
-        openapi_url=app.openapi_url,
-        title=app.title + " - ReDoc",
+        openapi_url=app.openapi_url,    # type: ignore
+        title=app.title + " - ReDoc",   # type: ignore
         redoc_js_url="https://unpkg.com/redoc@next/bundles/redoc.standalone.js",
     )
 

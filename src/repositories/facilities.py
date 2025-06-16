@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from sqlalchemy import select, delete, insert
 from src.repositories.base import BaseRepository
 from src.models.facilities import FacilitiesOrm, RoomsFacilitiesOrm
@@ -18,14 +20,14 @@ class RoomsFacilitiesRepository(BaseRepository):
             room_id=room_id
         )  # select импортируем из алхимии
         res = await self.session.execute(get_current_facilities_ids_query)
-        current_facilities_ids: list[int] = res.scalars().all()
+        current_facilities_ids: Sequence[int] = res.scalars().all()
         ids_to_delete: list[int] = list(set(current_facilities_ids) - set(facilities_ids))
         ids_to_insert: list[int] = list(set(facilities_ids) - set(current_facilities_ids))
 
         if ids_to_delete:
-            delete_m2m_facilities_stmt = delete(self.model).filter(
-                self.model.room_id == room_id,
-                self.model.facility_id.in_(ids_to_delete),
+            delete_m2m_facilities_stmt = delete(self.model).filter(    # type: ignore
+                self.model.room_id == room_id,                 # type: ignore
+                self.model.facility_id.in_(ids_to_delete),             # type: ignore
             )
             await self.session.execute(delete_m2m_facilities_stmt)
 
