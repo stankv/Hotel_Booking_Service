@@ -1,7 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from src.schemas.bookings import BookingAddRequest, BookingAdd
 from src.api.dependencies import DBDep, UserIdDep  # PaginationDep?
+from src.exceptions import ObjectNotFoundException
 from src.schemas.hotels import Hotel
 from src.schemas.rooms import Room
 
@@ -38,8 +39,11 @@ async def add_booking(
 ):
     if user_id is None:
         return {"status": "ERROR", "message": "Пользователь не авторизован"}
-    room: Room | None = await db.rooms.get_one_or_none(id=booking_data.room_id)
-    hotel: Hotel | None = await db.hotels.get_one_or_none(id=room.hotel_id)
+    try:
+        room: Room = await db.rooms.get_one(id=booking_data.room_id)
+    except ObjectNotFoundException:
+        raise HTTPException(status_code=400, detail="Номер не найден")
+    hotel: Hotel = await db.hotels.get_one(id=room.hotel_id)
     room_price: int = room.price
     _booking_data = BookingAdd(
         user_id=user_id,
