@@ -7,3 +7,7 @@ class HotelBookingServiceException(Exception):    # создаем свое ба
 
 class ObjectNotFoundException(HotelBookingServiceException):
     detail = "Объект не найден"
+
+
+class AllRoomsAreBookedException(HotelBookingServiceException):
+    detail = "Не осталось свободных номеров"
