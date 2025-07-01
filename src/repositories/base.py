@@ -39,7 +39,7 @@ class BaseRepository:
         query = select(self.model).filter_by(**filter_by)
         result = await self.session.execute(query)
         try:
-            model = result.scalars_one()
+            model = result.scalar_one()
         except NoResultFound:
             raise ObjectNotFoundException
         return self.mapper.map_to_domain_entity(model)
