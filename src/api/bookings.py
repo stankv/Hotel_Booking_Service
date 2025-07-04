@@ -1,12 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
-from src.schemas.bookings import BookingAddRequest, BookingAdd
-from src.api.dependencies import DBDep, UserIdDep  # PaginationDep?
-from src.exceptions import ObjectNotFoundException, AllRoomsAreBookedException, RoomNotFoundHTTPException
-from src.schemas.hotels import Hotel
-from src.schemas.rooms import Room
+from src.api.dependencies import DBDep, UserIdDep
+from src.exceptions import AllRoomsAreBookedException, AllRoomsAreBookedHTTPException
+from src.schemas.bookings import BookingAddRequest
+from src.services.bookings import BookingService
 
-router = APIRouter(prefix="/bookings", tags=["Бронирование номеров"])
+router = APIRouter(prefix="/bookings", tags=["Бронирования"])
 
 
 @router.get(
@@ -15,7 +14,7 @@ router = APIRouter(prefix="/bookings", tags=["Бронирование номе�
     description="<h1>Все бронирования</h1><br>",
 )
 async def get_bookings(db: DBDep):
-    return await db.bookings.get_all()
+    return await BookingService(db).get_bookings()
 
 
 @router.get(
@@ -24,35 +23,21 @@ async def get_bookings(db: DBDep):
     description="<h1>Все бронирования пользователя</h1><h2>(нужно авторизоваться)</h2>",
 )
 async def get_my_bookings(user_id: UserIdDep, db: DBDep):
-    return await db.bookings.get_filtered(user_id=user_id)
+    return await BookingService(db).get_my_bookings(user_id)
 
 
 @router.post(
     "",
     summary="Бронирование номера",
-    description="<h1>Добавление бронирования</h1><br>",
+    description="<h1>Добавление бронирования</h1>",
 )
 async def add_booking(
     user_id: UserIdDep,
     db: DBDep,
     booking_data: BookingAddRequest,
 ):
-    if user_id is None:
-        return {"status": "ERROR", "message": "Пользователь не авторизован"}
     try:
-        room: Room = await db.rooms.get_one(id=booking_data.room_id)
-    except ObjectNotFoundException:
-        raise RoomNotFoundHTTPException
-    hotel: Hotel = await db.hotels.get_one(id=room.hotel_id)
-    room_price: int = room.price
-    _booking_data = BookingAdd(
-        user_id=user_id,
-        price=room_price,
-        **booking_data.model_dump(),
-    )
-    try:
-        booking = await db.bookings.add_booking(_booking_data, hotel_id=hotel.id)
-    except AllRoomsAreBookedException as ex:
-        raise HTTPException(status_code=409, detail=ex.detail)
-    await db.commit()
+        booking = await BookingService(db).add_booking(user_id, booking_data)
+    except AllRoomsAreBookedException:
+        raise AllRoomsAreBookedHTTPException
     return {"status": "OK", "data": booking}

@@ -1,32 +1,13 @@
 from fastapi import APIRouter, HTTPException, Response
 
-from src.exceptions import ObjectAlreadyExistsException
+from src.api.dependencies import UserIdDep, DBDep
+from src.exceptions import ObjectAlreadyExistsException, IncorrectPasswordHTTPException, IncorrectPasswordException, \
+    EmailNotRegisteredHTTPException, EmailNotRegisteredException, UserAlreadyExistsException, \
+    UserEmailAlreadyExistsHTTPException
 from src.schemas.users import UserRequestAdd, UserAdd
 from src.services.auth import AuthService
-from src.api.dependencies import UserIdDep, DBDep
-
 
 router = APIRouter(prefix="/auth", tags=["Авторизация и аутентификация"])
-
-
-@router.post(
-    "/login",
-    summary="Аутентификация",
-    description="<h1>Аутентификация (вход) пользователя</h1>",
-)
-async def login_user(
-    data: UserRequestAdd,
-    response: Response,
-    db: DBDep,
-):
-    user = await db.users.get_user_with_hashed_password(email=data.email)
-    if not user:
-        raise HTTPException(status_code=401, detail="Пользователь с таким email не зарегистрирован")
-    if not AuthService().verify_password(data.password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="Пароль неверный")
-    access_token = AuthService().create_access_token({"user_id": user.id})
-    response.set_cookie("access_token", access_token)
-    return {"access_token": access_token}
 
 
 @router.post(
@@ -38,14 +19,31 @@ async def register_user(
     data: UserRequestAdd,
     db: DBDep,
 ):
-    hashed_password = AuthService().hash_password(data.password)
-    new_user_data = UserAdd(email=data.email, hashed_password=hashed_password)
     try:
-        await db.users.add(new_user_data)
-        await db.commit()
-    except ObjectAlreadyExistsException:
-        raise HTTPException(status_code=409, detail="Пользователь с таким e-mail уже существует")
+        await AuthService(db).register_user(data)
+    except UserAlreadyExistsException:
+        raise UserEmailAlreadyExistsHTTPException
     return {"status": "OK"}
+
+
+@router.post(
+    "/login",
+    summary="Аутентификация (Вход)",
+    description="<h1>Аутентификация (вход) пользователя</h1>",
+)
+async def login_user(
+    data: UserRequestAdd,
+    response: Response,
+    db: DBDep,
+):
+    try:
+        access_token = await AuthService(db).login_user(data)
+    except EmailNotRegisteredException:
+        raise EmailNotRegisteredHTTPException
+    except IncorrectPasswordException:
+        raise IncorrectPasswordHTTPException
+    response.set_cookie("access_token", access_token)
+    return {"access_token": access_token}
 
 
 @router.get(
@@ -53,12 +51,18 @@ async def register_user(
     summary="Получение данных текущего пользователя",
     description="<h1>Получение данных текущего пользователя из JWT-токена</h1>",
 )
-async def get_me(user_id: UserIdDep, db: DBDep):
-    user = await db.users.get_one_or_none(id=user_id)
-    return user
+async def get_me(
+    user_id: UserIdDep,
+    db: DBDep,
+):
+    return await AuthService(db).get_one_or_none_user(user_id)
 
 
-@router.post("/logout")
+@router.post(
+    "/logout",
+    summary="Выход",
+    description="<h1>Выход пользователя</h1>",
+)
 async def logout(response: Response):
     response.delete_cookie("access_token")
     return {"status": "OK"}
