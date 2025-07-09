@@ -2,46 +2,46 @@ from datetime import date
 from fastapi import HTTPException
 
 
-class NabronirovalException(Exception):
+class HotelBookingServiceException(Exception):
     detail = "Неожиданная ошибка"
 
     def __init__(self, *args, **kwargs):
         super().__init__(self.detail, *args, **kwargs)
 
 
-class ObjectNotFoundException(NabronirovalException):
+class ObjectNotFoundException(HotelBookingServiceException):
     detail = "Объект не найден"
 
 
-class RoomNotFoundException(NabronirovalException):
+class RoomNotFoundException(ObjectNotFoundException):
     detail = "Номер не найден"
 
 
-class HotelNotFoundException(NabronirovalException):
+class HotelNotFoundException(ObjectNotFoundException):
     detail = "Отель не найден"
 
 
-class ObjectAlreadyExistsException(NabronirovalException):
+class ObjectAlreadyExistsException(HotelBookingServiceException):
     detail = "Похожий объект уже существует"
 
 
-class AllRoomsAreBookedException(NabronirovalException):
+class AllRoomsAreBookedException(HotelBookingServiceException):
     detail = "Не осталось свободных номеров"
 
 
-class IncorrectTokenException(NabronirovalException):
+class IncorrectTokenException(HotelBookingServiceException):
     detail = "Некорректный токен"
 
 
-class EmailNotRegisteredException(NabronirovalException):
+class EmailNotRegisteredException(HotelBookingServiceException):
     detail = "Пользователь с таким email не зарегистрирован"
 
 
-class IncorrectPasswordException(NabronirovalException):
+class IncorrectPasswordException(HotelBookingServiceException):
     detail = "Пароль неверный"
 
 
-class UserAlreadyExistsException(NabronirovalException):
+class UserAlreadyExistsException(HotelBookingServiceException):
     detail = "Пользователь уже существует"
 
 
@@ -50,7 +50,7 @@ def check_date_to_after_date_from(date_from: date, date_to: date) -> None:
         raise HTTPException(status_code=422, detail="Дата заезда не может быть позже даты выезда")
 
 
-class NabronirovalHTTPException(HTTPException):
+class HotelBookingServiceHTTPException(HTTPException):
     status_code = 500
     detail = None
 
@@ -58,40 +58,40 @@ class NabronirovalHTTPException(HTTPException):
         super().__init__(status_code=self.status_code, detail=self.detail)
 
 
-class HotelNotFoundHTTPException(NabronirovalHTTPException):
+class HotelNotFoundHTTPException(HotelBookingServiceHTTPException):
     status_code = 404
     detail = "Отель не найден"
 
 
-class RoomNotFoundHTTPException(NabronirovalHTTPException):
+class RoomNotFoundHTTPException(HotelBookingServiceHTTPException):
     status_code = 404
     detail = "Номер не найден"
 
 
-class AllRoomsAreBookedHTTPException(NabronirovalHTTPException):
+class AllRoomsAreBookedHTTPException(HotelBookingServiceHTTPException):
     status_code = 409
     detail = "Не осталось свободных номеров"
 
 
-class IncorrectTokenHTTPException(NabronirovalHTTPException):
+class IncorrectTokenHTTPException(HotelBookingServiceHTTPException):
     detail = "Некорректный токен"
 
 
-class EmailNotRegisteredHTTPException(NabronirovalHTTPException):
+class EmailNotRegisteredHTTPException(HotelBookingServiceHTTPException):
     status_code = 401
     detail = "Пользователь с таким email не зарегистрирован"
 
 
-class UserEmailAlreadyExistsHTTPException(NabronirovalHTTPException):
+class UserEmailAlreadyExistsHTTPException(HotelBookingServiceHTTPException):
     status_code = 409
     detail = "Пользователь с такой почтой уже существует"
 
 
-class IncorrectPasswordHTTPException(NabronirovalHTTPException):
+class IncorrectPasswordHTTPException(HotelBookingServiceHTTPException):
     status_code = 401
     detail = "Пароль неверный"
 
 
-class NoAccessTokenHTTPException(NabronirovalHTTPException):
+class NoAccessTokenHTTPException(HotelBookingServiceHTTPException):
     status_code = 401
     detail = "Вы не предоставили токен доступа"
