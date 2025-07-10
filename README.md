@@ -13,3 +13,52 @@
 
 # Сервис бронирования отелей
 В разработке...
+
+## Команды для запуска сервисов в Docker:
+1. Сборка образа с приложением: 
+
+        sudo docker build -t booking_image .
+
+2. Создание docker-сети: 
+
+        sudo docker network create myNetwork
+
+3. Создание и запуск контейнера с приложением:
+
+        docker run --name booking_back \
+            -p 7777:8000 \
+            --network=myNetwork \
+            booking_image
+
+3. Создание и запуск контейнера с БД PostgreSQL:
+
+        sudo docker run --name booking_db \
+            -p 6432:5432 \
+            -e POSTGRES_USER=abcde \
+            -e POSTGRES_PASSWORD=abcde \
+            -e POSTGRES_DB=booking \
+            --network=myNetwork \
+            --volume pg-booking-data:/var/lib/postgresql/data \
+            -d postgres:16
+
+4. Создание и запуск контейнера с Redis:
+
+        sudo docker run --name booking_cache \
+            -p 7379:6379 \
+            --network=myNetwork \
+            -d redis:7.4
+
+5. Создание и запуск контейнера с Celery:
+
+        sudo docker run --name booking_celery_worker \
+            --network=myNetwork \
+            booking_image \
+            celery --app=src.tasks.celery_app:celery_instance worker -l INFO
+
+6. Создание и запуск контейнера с Celery beat:
+
+        sudo docker run --name booking_celery_beat \
+            --network=myNetwork \
+            booking_image \
+            celery --app=src.tasks.celery_app:celery_instance worker -l INFO -B
+
