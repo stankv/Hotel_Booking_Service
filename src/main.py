@@ -18,6 +18,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 logging.basicConfig(level=logging.INFO)
 
 from src.init import redis_manager  # from src.init import redis_manager
+from src.api.main_page import router as router_main_page
 from src.api.auth import router as router_auth
 from src.api.hotels import router as router_hotels
 from src.api.rooms import router as router_rooms
@@ -42,6 +43,7 @@ async def lifespan(app: FastAPI):
 # https://fastapi.tiangolo.com/how-to/custom-docs-ui-assets/#disable-the-automatic-docs
 app = FastAPI(docs_url=None, redoc_url=None, lifespan=lifespan)
 
+app.include_router(router_main_page)
 app.include_router(router_auth)
 app.include_router(router_hotels)
 app.include_router(router_rooms)
@@ -78,4 +80,4 @@ async def redoc_html():
 # --------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
