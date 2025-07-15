@@ -14,7 +14,12 @@
 # Сервис бронирования отелей
 В разработке...
 
-## Команды для запуска сервисов в Docker:
+## Запуск сервисов в Docker по отдельности:
+
+Перед запуском контейнеров пропишите в файле конфигурации ***.env*** (в корне каталога) 
+имя пользователя и пароль для подключения к БД, и затем эти же данные в параметрах 
+команды запуска контейнера с БД (п.5).
+
 1. Сборка образа с приложением: 
 
         sudo docker build -t booking_image .
@@ -23,39 +28,46 @@
 
         sudo docker network create myNetwork
 
-3. Создание и запуск контейнера с приложением:
+3. Создание и запуск контейнера с nginx:
+    
+        sudo docker run --name booking_nginx \
+            -v ./nginx.conf:/etc/nginx/nginx.conf \
+            --network=myNetwork \
+            --rm -p 80:80 nginx
 
-        docker run --name booking_back \
+4. Создание и запуск контейнера с приложением:
+
+        sudo docker run --name booking_back \
             -p 7777:8000 \
             --network=myNetwork \
             booking_image
 
-3. Создание и запуск контейнера с БД PostgreSQL:
+5. Создание и запуск контейнера с БД PostgreSQL:
 
         sudo docker run --name booking_db \
             -p 6432:5432 \
-            -e POSTGRES_USER=abcde \
-            -e POSTGRES_PASSWORD=abcde \
+            -e POSTGRES_USER=ваше_имя_пользователя \
+            -e POSTGRES_PASSWORD=ваш_пароль \
             -e POSTGRES_DB=booking \
             --network=myNetwork \
             --volume pg-booking-data:/var/lib/postgresql/data \
             -d postgres:16
 
-4. Создание и запуск контейнера с Redis:
+6. Создание и запуск контейнера с Redis:
 
         sudo docker run --name booking_cache \
             -p 7379:6379 \
             --network=myNetwork \
             -d redis:7.4
 
-5. Создание и запуск контейнера с Celery:
+7. Создание и запуск контейнера с Celery:
 
         sudo docker run --name booking_celery_worker \
             --network=myNetwork \
             booking_image \
             celery --app=src.tasks.celery_app:celery_instance worker -l INFO
 
-6. Создание и запуск контейнера с Celery beat:
+8. Создание и запуск контейнера с Celery beat:
 
         sudo docker run --name booking_celery_beat \
             --network=myNetwork \
