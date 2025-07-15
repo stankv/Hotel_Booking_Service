@@ -28,19 +28,21 @@
 
         sudo docker network create myNetwork
 
-3. Создание и запуск контейнера с nginx:
+
+3. Создание и запуск контейнера с приложением:
+
+        sudo docker run --name booking_back \
+            -p 7777:8000 \
+            --network=myNetwork \
+            booking_image
+
+4. Создание и запуск контейнера с nginx:
     
         sudo docker run --name booking_nginx \
             -v ./nginx.conf:/etc/nginx/nginx.conf \
             --network=myNetwork \
             --rm -p 80:80 nginx
 
-4. Создание и запуск контейнера с приложением:
-
-        sudo docker run --name booking_back \
-            -p 7777:8000 \
-            --network=myNetwork \
-            booking_image
 
 5. Создание и запуск контейнера с БД PostgreSQL:
 
