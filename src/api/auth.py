@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, Response
+from debugpy.adapter import access_token
+from fastapi import APIRouter, HTTPException, Response, Request
 
 from src.api.dependencies import UserIdDep, DBDep
 from src.config import settings
@@ -67,6 +68,9 @@ async def get_me(
     summary="Выход",
     description="<h1>Выход пользователя</h1>",
 )
-async def logout(response: Response):
-    response.delete_cookie("access_token")
-    return {"status": "OK"}
+async def logout(response: Response, request: Request):
+    access_token: str | None = request.cookies.get("access_token")
+    if access_token:
+        response.delete_cookie("access_token")
+        return {"status": "OK"}
+    return {"status": "Вы уже вышли из системы"}
