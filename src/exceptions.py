@@ -1,6 +1,8 @@
 from datetime import date
 from fastapi import HTTPException
 
+from src.config import settings
+
 
 class HotelBookingServiceException(Exception):
     detail = "Неожиданная ошибка"
@@ -39,6 +41,10 @@ class EmailNotRegisteredException(HotelBookingServiceException):
 
 class IncorrectPasswordException(HotelBookingServiceException):
     detail = "Пароль неверный"
+
+
+class IncorrectPasswordRegisterException(HotelBookingServiceException):
+    detail = "Некорректный пароль при регистрации"
 
 
 class UserAlreadyExistsException(HotelBookingServiceException):
@@ -90,6 +96,11 @@ class UserEmailAlreadyExistsHTTPException(HotelBookingServiceHTTPException):
 class IncorrectPasswordHTTPException(HotelBookingServiceHTTPException):
     status_code = 401
     detail = "Пароль неверный"
+
+
+class IncorrectPasswordRegisterHTTPException(HotelBookingServiceHTTPException):
+    status_code = 406
+    detail = f"Пароль должен быть не менее {settings.MIN_LENGTH_PASSWORD} символов!"
 
 
 class NoAccessTokenHTTPException(HotelBookingServiceHTTPException):

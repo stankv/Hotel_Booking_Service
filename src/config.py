@@ -6,6 +6,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     MODE: Literal["TEST", "LOCAL", "DEV", "PROD"]
 
+    MIN_LENGTH_PASSWORD: int
+
     DB_HOST: str
     DB_PORT: int
     DB_USER: str

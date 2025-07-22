@@ -5,7 +5,7 @@ import jwt
 
 from src.config import settings
 from src.exceptions import IncorrectTokenException, EmailNotRegisteredException, IncorrectPasswordException, \
-    ObjectAlreadyExistsException, UserAlreadyExistsException
+    ObjectAlreadyExistsException, UserAlreadyExistsException, IncorrectPasswordRegisterException
 from src.schemas.users import UserRequestAdd, UserAdd
 from src.services.base import BaseService
 
@@ -37,6 +37,8 @@ class AuthService(BaseService):
             raise IncorrectTokenException
 
     async def register_user(self, data: UserRequestAdd):
+        if len(data.password.strip()) < settings.MIN_LENGTH_PASSWORD:
+            raise IncorrectPasswordRegisterException
         hashed_password = self.hash_password(data.password)
         new_user_data = UserAdd(email=data.email, hashed_password=hashed_password)
         try:
