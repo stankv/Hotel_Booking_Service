@@ -15,12 +15,15 @@ class RoomService(BaseService):
             date_from: date,
             date_to: date,
     ):
+        await HotelService(self.db).get_hotel_with_check(hotel_id)
         check_date_to_after_date_from(date_from, date_to)
         return await self.db.rooms.get_filtered_by_time(
             hotel_id=hotel_id, date_from=date_from, date_to=date_to
         )
 
     async def get_room(self, room_id: int, hotel_id: int):
+        await self.get_room_with_check(room_id)
+        await HotelService(self.db).get_hotel_with_check(hotel_id)
         return await self.db.rooms.get_one_with_relationships(id=room_id, hotel_id=hotel_id)
 
     async def create_room(
@@ -28,10 +31,7 @@ class RoomService(BaseService):
             hotel_id: int,
             room_data: RoomAddRequest,
     ):
-        try:
-            await self.db.hotels.get_one(id=hotel_id)
-        except ObjectNotFoundException as ex:
-            raise HotelNotFoundException from ex
+        await HotelService(self.db).get_hotel_with_check(hotel_id)
         _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
         room: Room = await self.db.rooms.add(_room_data)
         rooms_facilities_data = [
@@ -40,6 +40,7 @@ class RoomService(BaseService):
         if rooms_facilities_data:
             await self.db.rooms_facilities.add_bulk(rooms_facilities_data)
         await self.db.commit()
+        return room
 
     async def edit_room(
             self,

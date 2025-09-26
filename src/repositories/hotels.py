@@ -14,6 +14,11 @@ class HotelsRepository(BaseRepository):
     model = HotelsOrm
     mapper = HotelDataMapper
 
+    async def get_full_all(self):
+        query = select(HotelsOrm)
+        result = await self.session.execute(query)
+        return [self.mapper.map_to_domain_entity(hotel) for hotel in result.scalars().all()]
+
     async def get_all(
         self,
         title,

@@ -11,6 +11,22 @@ class HotelBookingServiceException(Exception):
         super().__init__(self.detail, *args, **kwargs)
 
 
+class EmptyAllFieldsException(HotelBookingServiceException):
+    detail = "Не переданы все поля"
+
+
+class EmptyFieldException(HotelBookingServiceException):
+    detail = "Пустое поле"
+
+
+class EmptyTitleFieldException(EmptyFieldException):
+        detail = "Не передано название"
+
+
+class EmptyLocationFieldException(EmptyFieldException):
+    detail = "Не передан адрес"
+
+
 class ObjectNotFoundException(HotelBookingServiceException):
     detail = "Объект не найден"
 
@@ -24,7 +40,7 @@ class HotelNotFoundException(ObjectNotFoundException):
 
 
 class ObjectAlreadyExistsException(HotelBookingServiceException):
-    detail = "Похожий объект уже существует"
+    detail = "Такой объект уже существует"
 
 
 class AllRoomsAreBookedException(HotelBookingServiceException):
@@ -63,6 +79,10 @@ class HotelBookingServiceHTTPException(HTTPException):
     def __init__(self):
         super().__init__(status_code=self.status_code, detail=self.detail)
 
+
+class ObjectAlreadyExistsHTTPException(HotelBookingServiceHTTPException):
+    status_code = 409
+    detail = "Объект уже существует"
 
 class HotelNotFoundHTTPException(HotelBookingServiceHTTPException):
     status_code = 404
@@ -106,3 +126,18 @@ class IncorrectPasswordRegisterHTTPException(HotelBookingServiceHTTPException):
 class NoAccessTokenHTTPException(HotelBookingServiceHTTPException):
     status_code = 401
     detail = "Вы не предоставили токен доступа"
+
+
+class EmptyAllFieldsHTTPException(HotelBookingServiceHTTPException):
+    status_code = 400
+    detail = "Не передано ни одно значение"
+
+
+class EmptyTitleFieldHTTPException(HotelBookingServiceHTTPException):
+    status_code = 400
+    detail = "Не передано название. Пустое поле title"
+
+
+class EmptyLocationFieldHTTPException(HotelBookingServiceHTTPException):
+    status_code = 400
+    detail = "Не передан адрес. Пустое поле location"

@@ -24,7 +24,10 @@ async def get_rooms(
     date_from: date = Query(example="2024-08-01", description="Дата заезда"),
     date_to: date = Query(example="2024-08-10", description="Дата выезда"),
 ):
-    return await RoomService(db).get_filtered_by_time(hotel_id, date_from, date_to)
+    try:
+        return await RoomService(db).get_filtered_by_time(hotel_id, date_from, date_to)
+    except HotelNotFoundException:
+        raise HotelNotFoundHTTPException
 
 
 @router.get(
@@ -38,6 +41,8 @@ async def get_room(room_id: int, hotel_id: int, db: DBDep):
         return await RoomService(db).get_room(room_id, hotel_id=hotel_id)
     except RoomNotFoundException:
         raise RoomNotFoundHTTPException
+    except HotelNotFoundException:
+        raise HotelNotFoundHTTPException
 
 
 @router.post(
@@ -59,7 +64,12 @@ async def create_room(hotel_id: int, db: DBDep, room_data: RoomAddRequest = Body
     description="<h1>Ввод данных для всех полей обязателен</h1>",
 )
 async def update_room(hotel_id: int, room_id: int, room_data: RoomAddRequest, db: DBDep):
-    await RoomService(db).edit_room(hotel_id, room_id, room_data)
+    try:
+        await RoomService(db).edit_room(hotel_id, room_id, room_data)
+    except HotelNotFoundException:
+        raise HotelNotFoundHTTPException
+    except RoomNotFoundException:
+        raise RoomNotFoundHTTPException
     return {"status": "OK"}
 
 
@@ -71,7 +81,12 @@ async def update_room(hotel_id: int, room_id: int, room_data: RoomAddRequest, db
 async def partially_update_room(
     hotel_id: int, room_id: int, room_data: RoomPatchRequest, db: DBDep
 ):
-    await RoomService(db).partially_edit_room(hotel_id, room_id, room_data)
+    try:
+        await RoomService(db).partially_edit_room(hotel_id, room_id, room_data)
+    except HotelNotFoundException:
+        raise HotelNotFoundHTTPException
+    except RoomNotFoundException:
+        raise RoomNotFoundHTTPException
     return {"status": "OK"}
 
 
@@ -81,5 +96,10 @@ async def partially_update_room(
     description="<h1>Удаление номера по его id у конкретного отеля</h1>",
 )
 async def delete_room(hotel_id: int, room_id: int, db: DBDep):
-    await RoomService(db).delete_room(hotel_id, room_id)
+    try:
+        await RoomService(db).delete_room(hotel_id, room_id)
+    except HotelNotFoundException:
+        raise HotelNotFoundHTTPException
+    except RoomNotFoundException:
+        raise RoomNotFoundHTTPException
     return {"status": "OK"}
