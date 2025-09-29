@@ -47,6 +47,10 @@ class AllRoomsAreBookedException(HotelBookingServiceException):
     detail = "Не осталось свободных номеров"
 
 
+class RoomHasActiveBookingsException(HotelBookingServiceException):
+    detail = "Номер имеет активное бронирование!"
+
+
 class IncorrectTokenException(HotelBookingServiceException):
     detail = "Некорректный токен"
 
@@ -92,6 +96,11 @@ class HotelNotFoundHTTPException(HotelBookingServiceHTTPException):
 class RoomNotFoundHTTPException(HotelBookingServiceHTTPException):
     status_code = 404
     detail = "Номер не найден"
+
+
+class RoomHasActiveBookingsHTTPException(HotelBookingServiceHTTPException):
+    status_code = 409
+    detail = "Нельзя удалить номер с активным бронированием!"
 
 
 class AllRoomsAreBookedHTTPException(HotelBookingServiceHTTPException):

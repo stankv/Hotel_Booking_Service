@@ -1,6 +1,6 @@
 from datetime import date
 
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import selectinload
 
@@ -38,3 +38,15 @@ class RoomsRepository(BaseRepository):
         except NoResultFound:
             raise RoomNotFoundException
         return RoomDataWithRelationshipsMapper.map_to_domain_entity(model)
+
+    async def has_active_bookings(self, room_id: int) -> bool:
+        from src.models.bookings import BookingsOrm
+        from sqlalchemy import select
+
+        # Проверяем есть ли активные бронирования для этого номера
+        query = select(BookingsOrm).where(
+            BookingsOrm.room_id == room_id,
+            BookingsOrm.date_to >= func.current_date()  # Бронирования, которые еще активны
+        )
+        result = await self.session.execute(query)
+        return result.scalar_one_or_none() is not None

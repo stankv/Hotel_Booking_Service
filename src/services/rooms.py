@@ -1,7 +1,7 @@
 from datetime import date
 
 from src.exceptions import check_date_to_after_date_from, ObjectNotFoundException, HotelNotFoundException, \
-    RoomNotFoundException
+    RoomNotFoundException, RoomHasActiveBookingsException
 from src.schemas.facilities import RoomFacilityAdd
 from src.schemas.rooms import RoomAddRequest, Room, RoomAdd, RoomPatchRequest, RoomPatch
 from src.services.base import BaseService
@@ -75,6 +75,12 @@ class RoomService(BaseService):
     async def delete_room(self, hotel_id: int, room_id: int):
         await HotelService(self.db).get_hotel_with_check(hotel_id)
         await self.get_room_with_check(room_id)
+        # Проверяем есть ли активные бронирования
+        if await self.db.rooms.has_active_bookings(room_id):
+            raise RoomHasActiveBookingsException
+        # Сначала удаляем все связи номера с удобствами
+        await self.db.rooms_facilities.delete(room_id=room_id)
+        # Затем удаляем сам номер
         await self.db.rooms.delete(id=room_id, hotel_id=hotel_id)
         await self.db.commit()
 

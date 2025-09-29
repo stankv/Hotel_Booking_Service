@@ -4,7 +4,8 @@ from fastapi import APIRouter, Body, Query
 from fastapi_cache.decorator import cache
 
 from src.exceptions import HotelNotFoundHTTPException, \
-    RoomNotFoundHTTPException, RoomNotFoundException, HotelNotFoundException
+    RoomNotFoundHTTPException, RoomNotFoundException, HotelNotFoundException, RoomHasActiveBookingsException, \
+    RoomHasActiveBookingsHTTPException
 from src.schemas.rooms import RoomAddRequest, RoomPatchRequest
 from src.api.dependencies import DBDep
 from src.services.rooms import RoomService
@@ -102,4 +103,6 @@ async def delete_room(hotel_id: int, room_id: int, db: DBDep):
         raise HotelNotFoundHTTPException
     except RoomNotFoundException:
         raise RoomNotFoundHTTPException
-    return {"status": "OK"}
+    except RoomHasActiveBookingsException:
+        raise RoomHasActiveBookingsHTTPException
+    return {"status": "OK", "detail": f"Номер c id={room_id} удален"}
