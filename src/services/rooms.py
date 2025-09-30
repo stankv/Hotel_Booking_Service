@@ -1,6 +1,6 @@
 from datetime import date
 
-from src.exceptions import check_date_to_after_date_from, ObjectNotFoundException, HotelNotFoundException, \
+from src.exceptions import validate_dates, check_date_to_after_date_from, ObjectNotFoundException, \
     RoomNotFoundException, RoomHasActiveBookingsException
 from src.schemas.facilities import RoomFacilityAdd
 from src.schemas.rooms import RoomAddRequest, Room, RoomAdd, RoomPatchRequest, RoomPatch
@@ -15,8 +15,11 @@ class RoomService(BaseService):
             date_from: date,
             date_to: date,
     ):
-        await HotelService(self.db).get_hotel_with_check(hotel_id)
+        # Валидируем даты через сервисные исключения
+        validate_dates(date_from, date_to)
         check_date_to_after_date_from(date_from, date_to)
+
+        await HotelService(self.db).get_hotel_with_check(hotel_id)
         return await self.db.rooms.get_filtered_by_time(
             hotel_id=hotel_id, date_from=date_from, date_to=date_to
         )

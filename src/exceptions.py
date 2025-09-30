@@ -2,6 +2,7 @@ from datetime import date
 from fastapi import HTTPException
 
 from src.config import settings
+from src.utils.date_validator import validate_date_format
 
 
 class HotelBookingServiceException(Exception):
@@ -51,6 +52,14 @@ class RoomHasActiveBookingsException(HotelBookingServiceException):
     detail = "Номер имеет активное бронирование!"
 
 
+class InvalidDateException(HotelBookingServiceException):
+    detail = "Некорректная дата!"
+
+
+class DateFromAfterDateToException(HotelBookingServiceException):
+    detail = "Дата заезда не может быть позже даты выезда!"
+
+
 class IncorrectTokenException(HotelBookingServiceException):
     detail = "Некорректный токен"
 
@@ -73,7 +82,23 @@ class UserAlreadyExistsException(HotelBookingServiceException):
 
 def check_date_to_after_date_from(date_from: date, date_to: date) -> None:
     if date_to <= date_from:
-        raise HTTPException(status_code=422, detail="Дата заезда не может быть позже даты выезда")
+        raise DateFromAfterDateToException
+
+
+def validate_dates(date_from: date, date_to: date) -> None:
+    """
+    Валидирует даты и выбрасывает соответствующие сервисные исключения
+    """
+    try:
+        # Преобразуем в строку и обратно для единообразной обработки
+        date_from_str = date_from.isoformat() if isinstance(date_from, date) else str(date_from)
+        date_to_str = date_to.isoformat() if isinstance(date_to, date) else str(date_to)
+
+        validate_date_format(date_from_str)
+        validate_date_format(date_to_str)
+
+    except ValueError:
+        raise InvalidDateException
 
 
 class HotelBookingServiceHTTPException(HTTPException):
@@ -106,6 +131,16 @@ class RoomHasActiveBookingsHTTPException(HotelBookingServiceHTTPException):
 class AllRoomsAreBookedHTTPException(HotelBookingServiceHTTPException):
     status_code = 409
     detail = "Не осталось свободных номеров"
+
+
+class InvalidDateHTTPException(HotelBookingServiceHTTPException):
+    status_code = 400
+    detail = "Введена некорректная дата!"
+
+
+class DateFromAfterDateToHTTPException(HotelBookingServiceHTTPException):
+    status_code = 422
+    detail = "Дата заезда не может быть позже даты выезда!"
 
 
 class IncorrectTokenHTTPException(HotelBookingServiceHTTPException):

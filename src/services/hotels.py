@@ -1,6 +1,6 @@
 from datetime import date
 
-from src.exceptions import check_date_to_after_date_from, ObjectNotFoundException, HotelNotFoundException, \
+from src.exceptions import validate_dates, check_date_to_after_date_from, ObjectNotFoundException, HotelNotFoundException, \
     EmptyTitleFieldException, EmptyLocationFieldException, ObjectAlreadyExistsException, EmptyAllFieldsException
 from src.schemas.hotels import HotelAdd, HotelPatch, Hotel
 from src.services.base import BaseService
@@ -15,7 +15,10 @@ class HotelService(BaseService):
             date_from: date,
             date_to: date,
     ):
+        # Валидируем даты через сервисные исключения
+        validate_dates(date_from, date_to)
         check_date_to_after_date_from(date_from, date_to)
+
         per_page = pagination.per_page or 5
         return await self.db.hotels.get_filtered_by_time(
             date_from=date_from,

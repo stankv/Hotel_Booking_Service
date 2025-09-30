@@ -1,12 +1,17 @@
-from src.exceptions import ObjectNotFoundException, RoomNotFoundException
+from src.exceptions import ObjectNotFoundException, RoomNotFoundException, InvalidDateException
 from src.schemas.bookings import BookingAddRequest, BookingAdd
 from src.schemas.hotels import Hotel
 from src.schemas.rooms import Room
 from src.services.base import BaseService
+from src.exceptions import validate_dates, check_date_to_after_date_from
 
 
 class BookingService(BaseService):
     async def add_booking(self, user_id: int, booking_data: BookingAddRequest):
+        # Валидируем даты бронирования через сервисные исключения
+        validate_dates(booking_data.date_from, booking_data.date_to)
+        check_date_to_after_date_from(booking_data.date_from, booking_data.date_to)
+
         try:
             room: Room = await self.db.rooms.get_one(id=booking_data.room_id)
         except ObjectNotFoundException as ex:

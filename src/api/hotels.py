@@ -6,7 +6,8 @@ from fastapi_cache.decorator import cache
 from src.exceptions import HotelNotFoundHTTPException, EmptyTitleFieldException, \
     EmptyTitleFieldHTTPException, EmptyLocationFieldException, EmptyLocationFieldHTTPException, \
     ObjectAlreadyExistsException, ObjectAlreadyExistsHTTPException, HotelNotFoundException, EmptyAllFieldsException, \
-    EmptyAllFieldsHTTPException
+    EmptyAllFieldsHTTPException, InvalidDateException, InvalidDateHTTPException, DateFromAfterDateToException, \
+    DateFromAfterDateToHTTPException
 from src.schemas.hotels import HotelPatch, HotelAdd
 from src.api.dependencies import PaginationDep, DBDep
 from src.services.hotels import HotelService
@@ -27,16 +28,21 @@ async def get_hotels(
     db: DBDep,
     title: str | None = Query(None, description="Название отеля"),
     location: str | None = Query(None, description=" Адрес отеля"),
-    date_from: date = Query(example="2024-08-01"),
-    date_to: date = Query(example="2024-08-10"),
+    date_from: date = Query(example="2025-12-01"),
+    date_to: date = Query(example="2025-12-10"),
 ):
-    return await HotelService(db).get_filtered_by_time(
-        pagination,
-        location,
-        title,
-        date_from,
-        date_to,
-    )
+    try:
+        return await HotelService(db).get_filtered_by_time(
+            pagination,
+            location,
+            title,
+            date_from,
+            date_to,
+        )
+    except InvalidDateException:
+        raise InvalidDateHTTPException
+    except DateFromAfterDateToException:
+        raise DateFromAfterDateToHTTPException()
 
 
 @router.get(

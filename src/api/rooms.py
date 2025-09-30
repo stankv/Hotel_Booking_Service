@@ -5,7 +5,8 @@ from fastapi_cache.decorator import cache
 
 from src.exceptions import HotelNotFoundHTTPException, \
     RoomNotFoundHTTPException, RoomNotFoundException, HotelNotFoundException, RoomHasActiveBookingsException, \
-    RoomHasActiveBookingsHTTPException
+    RoomHasActiveBookingsHTTPException, InvalidDateException, InvalidDateHTTPException, DateFromAfterDateToException, \
+    DateFromAfterDateToHTTPException
 from src.schemas.rooms import RoomAddRequest, RoomPatchRequest
 from src.api.dependencies import DBDep
 from src.services.rooms import RoomService
@@ -16,19 +17,23 @@ router = APIRouter(prefix="/hotels", tags=["Номера"])
 @router.get(
     "/{hotel_id}/rooms",
     summary="Получение ВСЕХ номеров конкретного отеля",
-    description="<h1>Все номера по конкретному id отеля</h1>",
+    description="<h1>Все номера id отеля. Дата заезда не раньше текущей даты!</h1>",
 )
 @cache(expire=10)
 async def get_rooms(
     hotel_id: int,
     db: DBDep,
-    date_from: date = Query(example="2024-08-01", description="Дата заезда"),
-    date_to: date = Query(example="2024-08-10", description="Дата выезда"),
+    date_from: date = Query(example="2025-12-01", description="Дата заезда"),
+    date_to: date = Query(example="2025-12-10", description="Дата выезда"),
 ):
     try:
         return await RoomService(db).get_filtered_by_time(hotel_id, date_from, date_to)
     except HotelNotFoundException:
         raise HotelNotFoundHTTPException
+    except InvalidDateException:
+        raise InvalidDateHTTPException
+    except DateFromAfterDateToException:
+        raise DateFromAfterDateToHTTPException
 
 
 @router.get(
