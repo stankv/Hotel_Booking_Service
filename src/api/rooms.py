@@ -6,7 +6,11 @@ from fastapi_cache.decorator import cache
 from src.exceptions import HotelNotFoundHTTPException, \
     RoomNotFoundHTTPException, RoomNotFoundException, HotelNotFoundException, RoomHasActiveBookingsException, \
     RoomHasActiveBookingsHTTPException, InvalidDateException, InvalidDateHTTPException, DateFromAfterDateToException, \
-    DateFromAfterDateToHTTPException
+    DateFromAfterDateToHTTPException, EmptyAllFieldsException, EmptyAllFieldsHTTPException, EmptyTitleFieldException, \
+    EmptyTitleFieldHTTPException, EmptyPriceFieldException, EmptyPriceFieldHTTPException, EmptyQuantityFieldException, \
+    EmptyQuantityFieldHTTPException, NegativePriceException, NegativePriceHTTPException, NegativeQuantityException, \
+    NegativeQuantityHTTPException, RoomAlreadyExistsException, RoomAlreadyExistsHTTPException, \
+    FacilityNotFoundException, FacilityNotFoundHTTPException
 from src.schemas.rooms import RoomAddRequest, RoomPatchRequest
 from src.api.dependencies import DBDep
 from src.services.rooms import RoomService
@@ -61,6 +65,22 @@ async def create_room(hotel_id: int, db: DBDep, room_data: RoomAddRequest = Body
         room = await RoomService(db).create_room(hotel_id, room_data)
     except HotelNotFoundException:
         raise HotelNotFoundHTTPException
+    except EmptyAllFieldsException:
+        raise EmptyAllFieldsHTTPException
+    except EmptyTitleFieldException:
+        raise EmptyTitleFieldHTTPException
+    except EmptyPriceFieldException:
+        raise EmptyPriceFieldHTTPException
+    except EmptyQuantityFieldException:
+        raise EmptyQuantityFieldHTTPException
+    except NegativePriceException:
+        raise NegativePriceHTTPException
+    except NegativeQuantityException:
+        raise NegativeQuantityHTTPException
+    except RoomAlreadyExistsException:
+        raise RoomAlreadyExistsHTTPException
+    except FacilityNotFoundException:
+        raise FacilityNotFoundHTTPException
     return {"status": "OK", "data": room}
 
 

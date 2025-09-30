@@ -1,7 +1,9 @@
 from datetime import date
 
 from src.exceptions import validate_dates, check_date_to_after_date_from, ObjectNotFoundException, \
-    RoomNotFoundException, RoomHasActiveBookingsException
+    RoomNotFoundException, RoomHasActiveBookingsException, EmptyAllFieldsException, EmptyTitleFieldException, \
+    RoomAlreadyExistsException, EmptyPriceFieldException, NegativePriceException, EmptyQuantityFieldException, \
+    NegativeQuantityException, FacilityNotFoundException
 from src.schemas.facilities import RoomFacilityAdd
 from src.schemas.rooms import RoomAddRequest, Room, RoomAdd, RoomPatchRequest, RoomPatch
 from src.services.base import BaseService
@@ -34,14 +36,59 @@ class RoomService(BaseService):
             hotel_id: int,
             room_data: RoomAddRequest,
     ):
+        # Проверяем существование отеля
         await HotelService(self.db).get_hotel_with_check(hotel_id)
+
+        # Проверка 1: Все ли поля пустые
+        if (not room_data.title and
+                not room_data.description and
+                room_data.price is None and
+                room_data.quantity is None):
+            raise EmptyAllFieldsException
+
+        # Проверка 2: Обязательное поле title
+        if not room_data.title or not room_data.title.strip():
+            raise EmptyTitleFieldException
+
+        # Проверка 3: Уникальность title (регистронезависимо)
+        room_data.title = room_data.title.strip()
+        existing_rooms = await self.db.rooms.get_filtered()
+        if any(room.title.lower() == room_data.title.lower() for room in existing_rooms):
+            raise RoomAlreadyExistsException
+
+        # Проверка 4: Обязательное поле price и его валидность
+        if room_data.price is None:
+            raise EmptyPriceFieldException
+        if room_data.price < 0:
+            raise NegativePriceException
+
+        # Проверка 5: Обязательное поле quantity и его валидность
+        if room_data.quantity is None:
+            raise EmptyQuantityFieldException
+        if room_data.quantity < 0:
+            raise NegativeQuantityException
+
+        # Проверка 6: Валидация facilities_ids
+        if room_data.facilities_ids:
+            existing_facilities = await self.db.facilities.get_all()
+            existing_facility_ids = {facility.id for facility in existing_facilities}
+
+            for facility_id in room_data.facilities_ids:
+                if facility_id not in existing_facility_ids:
+                    raise FacilityNotFoundException
+
+        # Создаем номер
+        room_data.description = room_data.description.strip() if room_data.description else None
         _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
         room: Room = await self.db.rooms.add(_room_data)
-        rooms_facilities_data = [
-            RoomFacilityAdd(room_id=room.id, facility_id=f_id) for f_id in room_data.facilities_ids
-        ]
-        if rooms_facilities_data:
+
+        # Создаем связи с удобствами
+        if room_data.facilities_ids:
+            rooms_facilities_data = [
+                RoomFacilityAdd(room_id=room.id, facility_id=f_id) for f_id in room_data.facilities_ids
+            ]
             await self.db.rooms_facilities.add_bulk(rooms_facilities_data)
+
         await self.db.commit()
         return room
 

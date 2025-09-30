@@ -80,6 +80,30 @@ class UserAlreadyExistsException(HotelBookingServiceException):
     detail = "Пользователь уже существует"
 
 
+class EmptyPriceFieldException(EmptyFieldException):
+    detail = "Не передана цена. Пустое поле price"
+
+
+class EmptyQuantityFieldException(EmptyFieldException):
+    detail = "Не передано количество номеров. Пустое поле quantity"
+
+
+class NegativePriceException(HotelBookingServiceException):
+    detail = "Отрицательное значение цены!"
+
+
+class NegativeQuantityException(HotelBookingServiceException):
+    detail = "Отрицательное значение для количества номеров!"
+
+
+class RoomAlreadyExistsException(ObjectAlreadyExistsException):
+    detail = "Такой номер уже существует"
+
+
+class FacilityNotFoundException(ObjectNotFoundException):
+    detail = "Удобство не существует!"
+
+
 def check_date_to_after_date_from(date_from: date, date_to: date) -> None:
     if date_to <= date_from:
         raise DateFromAfterDateToException
@@ -185,3 +209,33 @@ class EmptyTitleFieldHTTPException(HotelBookingServiceHTTPException):
 class EmptyLocationFieldHTTPException(HotelBookingServiceHTTPException):
     status_code = 400
     detail = "Не передан адрес. Пустое поле location"
+
+
+class EmptyPriceFieldHTTPException(HotelBookingServiceHTTPException):
+    status_code = 400
+    detail = "Не передана цена. Пустое поле price"
+
+
+class EmptyQuantityFieldHTTPException(HotelBookingServiceHTTPException):
+    status_code = 400
+    detail = "Не передано количество номеров. Пустое поле quantity"
+
+
+class NegativePriceHTTPException(HotelBookingServiceHTTPException):
+    status_code = 400
+    detail = "Отрицательное значение цены!"
+
+
+class NegativeQuantityHTTPException(HotelBookingServiceHTTPException):
+    status_code = 400
+    detail = "Отрицательное значение для количества номеров!"
+
+
+class RoomAlreadyExistsHTTPException(HotelBookingServiceHTTPException):
+    status_code = 409
+    detail = "Такой номер уже существует"
+
+
+class FacilityNotFoundHTTPException(HotelBookingServiceHTTPException):
+    status_code = 404
+    detail = "Удобство не существует!"
