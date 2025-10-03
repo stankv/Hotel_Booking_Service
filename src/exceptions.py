@@ -1,8 +1,6 @@
-from datetime import date
 from fastapi import HTTPException
 
 from src.config import settings
-from src.utils.date_validator import validate_date_format
 
 
 class HotelBookingServiceException(Exception):
@@ -104,25 +102,12 @@ class FacilityNotFoundException(ObjectNotFoundException):
     detail = "Удобство не существует!"
 
 
-def check_date_to_after_date_from(date_from: date, date_to: date) -> None:
-    if date_to <= date_from:
-        raise DateFromAfterDateToException
+class InvalidImageException(HotelBookingServiceException):
+    detail = "Загруженный файл не является изображением!"
 
 
-def validate_dates(date_from: date, date_to: date) -> None:
-    """
-    Валидирует даты и выбрасывает соответствующие сервисные исключения
-    """
-    try:
-        # Преобразуем в строку и обратно для единообразной обработки
-        date_from_str = date_from.isoformat() if isinstance(date_from, date) else str(date_from)
-        date_to_str = date_to.isoformat() if isinstance(date_to, date) else str(date_to)
-
-        validate_date_format(date_from_str)
-        validate_date_format(date_to_str)
-
-    except ValueError:
-        raise InvalidDateException
+class ImageTooLargeException(HotelBookingServiceException):
+    detail = "Размер изображения превышает допустимый лимит!"
 
 
 class HotelBookingServiceHTTPException(HTTPException):
@@ -164,7 +149,7 @@ class InvalidDateHTTPException(HotelBookingServiceHTTPException):
 
 class DateFromAfterDateToHTTPException(HotelBookingServiceHTTPException):
     status_code = 422
-    detail = "Дата заезда не может быть позже даты выезда!"
+    detail = "Дата заезда не может быть равна или позже даты выезда!"
 
 
 class IncorrectTokenHTTPException(HotelBookingServiceHTTPException):
@@ -239,3 +224,12 @@ class RoomAlreadyExistsHTTPException(HotelBookingServiceHTTPException):
 class FacilityNotFoundHTTPException(HotelBookingServiceHTTPException):
     status_code = 404
     detail = "Удобство не существует!"
+
+
+class InvalidImageHTTPException(HotelBookingServiceHTTPException):
+    status_code = 400
+    detail = "Загружаемый файл не является изображением!"
+
+class ImageTooLargeHTTPException(HotelBookingServiceHTTPException):
+    status_code = 400
+    detail = "Размер изображения превышает допустимый лимит!"

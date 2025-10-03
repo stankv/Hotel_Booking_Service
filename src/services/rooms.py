@@ -1,13 +1,12 @@
 from datetime import date
 
-from src.exceptions import validate_dates, check_date_to_after_date_from, ObjectNotFoundException, \
-    RoomNotFoundException, RoomHasActiveBookingsException, EmptyAllFieldsException, EmptyTitleFieldException, \
-    RoomAlreadyExistsException, EmptyPriceFieldException, NegativePriceException, EmptyQuantityFieldException, \
-    NegativeQuantityException, FacilityNotFoundException
+from src.exceptions import ObjectNotFoundException, RoomNotFoundException, RoomHasActiveBookingsException
 from src.schemas.facilities import RoomFacilityAdd
 from src.schemas.rooms import RoomAddRequest, Room, RoomAdd, RoomPatchRequest, RoomPatch
 from src.services.base import BaseService
 from src.services.hotels import HotelService
+from src.utils.date_validator import validate_dates, check_date_to_after_date_from
+from src.utils.room_validator import RoomValidator
 
 
 class RoomService(BaseService):
@@ -39,46 +38,13 @@ class RoomService(BaseService):
         # Проверяем существование отеля
         await HotelService(self.db).get_hotel_with_check(hotel_id)
 
-        # Проверка 1: Все ли поля пустые
-        if (not room_data.title and
-                not room_data.description and
-                room_data.price is None and
-                room_data.quantity is None):
-            raise EmptyAllFieldsException
+        # Валидируем данные номера
+        await RoomValidator.validate_room_data(self.db, room_data)
 
-        # Проверка 2: Обязательное поле title
-        if not room_data.title or not room_data.title.strip():
-            raise EmptyTitleFieldException
-
-        # Проверка 3: Уникальность title (регистронезависимо)
-        room_data.title = room_data.title.strip()
-        existing_rooms = await self.db.rooms.get_filtered()
-        if any(room.title.lower() == room_data.title.lower() for room in existing_rooms):
-            raise RoomAlreadyExistsException
-
-        # Проверка 4: Обязательное поле price и его валидность
-        if room_data.price is None:
-            raise EmptyPriceFieldException
-        if room_data.price < 0:
-            raise NegativePriceException
-
-        # Проверка 5: Обязательное поле quantity и его валидность
-        if room_data.quantity is None:
-            raise EmptyQuantityFieldException
-        if room_data.quantity < 0:
-            raise NegativeQuantityException
-
-        # Проверка 6: Валидация facilities_ids
-        if room_data.facilities_ids:
-            existing_facilities = await self.db.facilities.get_all()
-            existing_facility_ids = {facility.id for facility in existing_facilities}
-
-            for facility_id in room_data.facilities_ids:
-                if facility_id not in existing_facility_ids:
-                    raise FacilityNotFoundException
+        # Очищаем description от пробелов
+        RoomValidator.clean_room_description(room_data)
 
         # Создаем номер
-        room_data.description = room_data.description.strip() if room_data.description else None
         _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
         room: Room = await self.db.rooms.add(_room_data)
 
@@ -100,10 +66,19 @@ class RoomService(BaseService):
     ):
         await HotelService(self.db).get_hotel_with_check(hotel_id)
         await self.get_room_with_check(room_id)
+
+        # Валидируем данные номера (передаем room_id для исключения текущего номера из проверки уникальности)
+        await RoomValidator.validate_room_data(self.db, room_data, exclude_room_id=room_id)
+
+        # Очищаем description от пробелов
+        RoomValidator.clean_room_description(room_data)
+
         _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
         await self.db.rooms.edit(_room_data, id=room_id)
         await self.db.rooms_facilities.set_room_facilities(room_id, facilities_ids=room_data.facilities_ids)
         await self.db.commit()
+        # Возвращаем обновленный номер с отношениями (удобствами)
+        return await self.db.rooms.get_one_with_relationships(id=room_id, hotel_id=hotel_id)
 
     async def partially_edit_room(
             self,
@@ -112,15 +87,35 @@ class RoomService(BaseService):
             room_data: RoomPatchRequest,
     ):
         await HotelService(self.db).get_hotel_with_check(hotel_id)
-        await self.get_room_with_check(room_id)
+        current_room = await self.get_room_with_check(room_id)
+
+        # Валидируем только переданные данные
+        await RoomValidator.validate_partial_room_data(
+            self.db, room_data, current_room, exclude_room_id=room_id
+        )
+
+        # Очищаем description если он был передан
+        if room_data.description is not None:
+            room_data.description = room_data.description.strip()
+
+        # Подготавливаем данные для обновления
         _room_data_dict = room_data.model_dump(exclude_unset=True)
         _room_data = RoomPatch(hotel_id=hotel_id, **_room_data_dict)
+
+        # Обновляем номер
         await self.db.rooms.edit(_room_data, exclude_unset=True, id=room_id, hotel_id=hotel_id)
+
+        # Обновляем связи с удобствами если передан facilities_ids
         if "facilities_ids" in _room_data_dict:
             await self.db.rooms_facilities.set_room_facilities(
-                room_id, facilities_ids = _room_data_dict["facilities_ids"]
+                room_id, facilities_ids=_room_data_dict["facilities_ids"]
             )
-            await self.db.commit()
+
+        await self.db.commit()
+
+        # Возвращаем обновленный номер с отношениями
+        return await self.db.rooms.get_one_with_relationships(id=room_id, hotel_id=hotel_id)
+
 
     async def delete_room(self, hotel_id: int, room_id: int):
         await HotelService(self.db).get_hotel_with_check(hotel_id)

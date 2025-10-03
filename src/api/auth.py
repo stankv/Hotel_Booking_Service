@@ -72,5 +72,5 @@ async def logout(response: Response, request: Request):
     access_token: str | None = request.cookies.get("access_token")
     if access_token:
         response.delete_cookie("access_token")
-        return {"status": "OK"}
-    return {"status": "Вы уже вышли из системы"}
+        return {"status": "OK", "detail": "Вы вышли из системы"}
+    return {"status": "WARNING", "detail": "Вы уже вышли из системы или не были авторизованы"}

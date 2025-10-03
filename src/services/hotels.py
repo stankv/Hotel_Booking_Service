@@ -1,9 +1,10 @@
 from datetime import date
 
-from src.exceptions import validate_dates, check_date_to_after_date_from, ObjectNotFoundException, HotelNotFoundException, \
+from src.exceptions import ObjectNotFoundException, HotelNotFoundException, \
     EmptyTitleFieldException, EmptyLocationFieldException, ObjectAlreadyExistsException, EmptyAllFieldsException
 from src.schemas.hotels import HotelAdd, HotelPatch, Hotel
 from src.services.base import BaseService
+from src.utils.date_validator import validate_dates, check_date_to_after_date_from
 
 
 class HotelService(BaseService):

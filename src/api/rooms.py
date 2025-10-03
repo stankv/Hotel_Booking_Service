@@ -91,12 +91,28 @@ async def create_room(hotel_id: int, db: DBDep, room_data: RoomAddRequest = Body
 )
 async def update_room(hotel_id: int, room_id: int, room_data: RoomAddRequest, db: DBDep):
     try:
-        await RoomService(db).edit_room(hotel_id, room_id, room_data)
+        room = await RoomService(db).edit_room(hotel_id, room_id, room_data)
     except HotelNotFoundException:
         raise HotelNotFoundHTTPException
     except RoomNotFoundException:
         raise RoomNotFoundHTTPException
-    return {"status": "OK"}
+    except EmptyAllFieldsException:
+        raise EmptyAllFieldsHTTPException
+    except EmptyTitleFieldException:
+        raise EmptyTitleFieldHTTPException
+    except EmptyPriceFieldException:
+        raise EmptyPriceFieldHTTPException
+    except EmptyQuantityFieldException:
+        raise EmptyQuantityFieldHTTPException
+    except NegativePriceException:
+        raise NegativePriceHTTPException
+    except NegativeQuantityException:
+        raise NegativeQuantityHTTPException
+    except RoomAlreadyExistsException:
+        raise RoomAlreadyExistsHTTPException
+    except FacilityNotFoundException:
+        raise FacilityNotFoundHTTPException
+    return {"status": "OK", "data": room}
 
 
 @router.patch(
@@ -108,12 +124,28 @@ async def partially_update_room(
     hotel_id: int, room_id: int, room_data: RoomPatchRequest, db: DBDep
 ):
     try:
-        await RoomService(db).partially_edit_room(hotel_id, room_id, room_data)
+        room = await RoomService(db).partially_edit_room(hotel_id, room_id, room_data)
     except HotelNotFoundException:
         raise HotelNotFoundHTTPException
     except RoomNotFoundException:
         raise RoomNotFoundHTTPException
-    return {"status": "OK"}
+    except EmptyAllFieldsException:
+        raise EmptyAllFieldsHTTPException
+    except EmptyTitleFieldException:
+        raise EmptyTitleFieldHTTPException
+    except EmptyPriceFieldException:
+        raise EmptyPriceFieldHTTPException
+    except EmptyQuantityFieldException:
+        raise EmptyQuantityFieldHTTPException
+    except NegativePriceException:
+        raise NegativePriceHTTPException
+    except NegativeQuantityException:
+        raise NegativeQuantityHTTPException
+    except RoomAlreadyExistsException:
+        raise RoomAlreadyExistsHTTPException
+    except FacilityNotFoundException:
+        raise FacilityNotFoundHTTPException
+    return {"status": "OK", "data": room}
 
 
 @router.delete(

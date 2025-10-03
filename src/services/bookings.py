@@ -1,9 +1,9 @@
-from src.exceptions import ObjectNotFoundException, RoomNotFoundException, InvalidDateException
+from src.exceptions import ObjectNotFoundException, RoomNotFoundException
 from src.schemas.bookings import BookingAddRequest, BookingAdd
 from src.schemas.hotels import Hotel
 from src.schemas.rooms import Room
 from src.services.base import BaseService
-from src.exceptions import validate_dates, check_date_to_after_date_from
+from src.utils.date_validator import validate_dates, check_date_to_after_date_from
 
 
 class BookingService(BaseService):
