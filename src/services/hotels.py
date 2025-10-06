@@ -5,7 +5,6 @@ from src.exceptions import ObjectNotFoundException, HotelNotFoundException, \
     HotelHasRoomsWithActiveBookingsException
 from src.schemas.hotels import HotelAdd, HotelPatch, Hotel
 from src.services.base import BaseService
-from src.services.rooms import RoomService
 from src.utils.date_validator import validate_dates, check_date_to_after_date_from
 
 
@@ -97,9 +96,12 @@ class HotelService(BaseService):
                 if await self.db.rooms.has_active_bookings(room.id):
                     raise HotelHasRoomsWithActiveBookingsException
 
-            # Если активных бронирований нет - удаляем все номера
+            # Если активных бронирований нет - удаляем все номера через RoomService
+            # Ленивый импорт чтобы избежать циклической зависимости
+            from src.services.rooms import RoomService
             for room in rooms:
-                await RoomService(self.db).delete_room(hotel_id, room.id)
+                room_service = RoomService(self.db)
+                await room_service.delete_room(hotel_id, room.id)
 
         except ObjectNotFoundException:
             # Если номеров нет - это нормально, продолжаем удаление отеля
