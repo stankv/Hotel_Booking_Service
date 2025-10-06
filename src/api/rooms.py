@@ -21,7 +21,7 @@ router = APIRouter(prefix="/hotels", tags=["Номера"])
 @router.get(
     "/{hotel_id}/rooms",
     summary="Получение ВСЕХ номеров конкретного отеля",
-    description="<h1>Все номера id отеля. Дата заезда не раньше текущей даты!</h1>",
+    description="<h1>Все номера отеля. Дата заезда не раньше текущей даты!</h1>",
 )
 @cache(expire=10)
 async def get_rooms(
