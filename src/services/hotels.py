@@ -1,9 +1,11 @@
 from datetime import date
 
 from src.exceptions import ObjectNotFoundException, HotelNotFoundException, \
-    EmptyTitleFieldException, EmptyLocationFieldException, ObjectAlreadyExistsException, EmptyAllFieldsException
+    EmptyTitleFieldException, EmptyLocationFieldException, ObjectAlreadyExistsException, EmptyAllFieldsException, \
+    HotelHasRoomsWithActiveBookingsException
 from src.schemas.hotels import HotelAdd, HotelPatch, Hotel
 from src.services.base import BaseService
+from src.services.rooms import RoomService
 from src.utils.date_validator import validate_dates, check_date_to_after_date_from
 
 
@@ -83,6 +85,26 @@ class HotelService(BaseService):
         await self.db.commit()
 
     async def delete_hotel(self, hotel_id: int):
-        await self.get_hotel_with_check(hotel_id=hotel_id)
+        # Проверяем существование отеля
+        hotel = await self.get_hotel_with_check(hotel_id)
+
+        # Получаем все номера отеля
+        try:
+            rooms = await self.db.rooms.get_filtered(hotel_id=hotel_id)
+
+            # Проверяем каждый номер на активные бронирования
+            for room in rooms:
+                if await self.db.rooms.has_active_bookings(room.id):
+                    raise HotelHasRoomsWithActiveBookingsException
+
+            # Если активных бронирований нет - удаляем все номера
+            for room in rooms:
+                await RoomService(self.db).delete_room(hotel_id, room.id)
+
+        except ObjectNotFoundException:
+            # Если номеров нет - это нормально, продолжаем удаление отеля
+            pass
+
+        # Удаляем сам отель
         await self.db.hotels.delete(id=hotel_id)
         await self.db.commit()

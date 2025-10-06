@@ -50,6 +50,10 @@ class RoomHasActiveBookingsException(HotelBookingServiceException):
     detail = "Номер имеет активное бронирование!"
 
 
+class HotelHasRoomsWithActiveBookingsException(HotelBookingServiceException):
+    detail = "Отель имеет номера с активными бронированиями!"
+
+
 class InvalidDateException(HotelBookingServiceException):
     detail = "Некорректная дата!"
 
@@ -135,6 +139,11 @@ class RoomNotFoundHTTPException(HotelBookingServiceHTTPException):
 class RoomHasActiveBookingsHTTPException(HotelBookingServiceHTTPException):
     status_code = 409
     detail = "Нельзя удалить номер с активным бронированием!"
+
+
+class HotelHasRoomsWithActiveBookingsHTTPException(HotelBookingServiceHTTPException):
+    status_code = 409
+    detail = "Отель имеет номера с активными бронированиями!"
 
 
 class AllRoomsAreBookedHTTPException(HotelBookingServiceHTTPException):

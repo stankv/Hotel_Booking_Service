@@ -7,7 +7,8 @@ from src.exceptions import HotelNotFoundHTTPException, EmptyTitleFieldException,
     EmptyTitleFieldHTTPException, EmptyLocationFieldException, EmptyLocationFieldHTTPException, \
     ObjectAlreadyExistsException, ObjectAlreadyExistsHTTPException, HotelNotFoundException, EmptyAllFieldsException, \
     EmptyAllFieldsHTTPException, InvalidDateException, InvalidDateHTTPException, DateFromAfterDateToException, \
-    DateFromAfterDateToHTTPException
+    DateFromAfterDateToHTTPException, HotelHasRoomsWithActiveBookingsException, \
+    HotelHasRoomsWithActiveBookingsHTTPException
 from src.schemas.hotels import HotelPatch, HotelAdd
 from src.api.dependencies import PaginationDep, DBDep
 from src.services.hotels import HotelService
@@ -159,4 +160,6 @@ async def delete_hotel(hotel_id: int, db: DBDep):
         await HotelService(db).delete_hotel(hotel_id)
     except HotelNotFoundException:
         raise HotelNotFoundHTTPException
+    except HotelHasRoomsWithActiveBookingsException:
+        raise HotelHasRoomsWithActiveBookingsHTTPException
     return {"status": "OK", "detail": f"Отель c id={hotel_id} удален"}
