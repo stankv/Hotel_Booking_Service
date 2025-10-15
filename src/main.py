@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import (
     get_redoc_html,
     get_swagger_ui_html,
@@ -38,11 +39,28 @@ async def lifespan(app: FastAPI):
     await redis_manager.close()
 
 
-# --------------------------------------------------------------------------------------
-# решение проблемы нкорректной работы документации
-# https://fastapi.tiangolo.com/how-to/custom-docs-ui-assets/#disable-the-automatic-docs
+# Функция для добавления HEAD методов ко всем роутерам
+# def add_head_methods_to_all_routes(app: FastAPI):
+#     for route in app.routes:
+#         if isinstance(route, APIRoute):
+#             route.methods.add("HEAD")
+
 app = FastAPI(docs_url=None, redoc_url=None, lifespan=lifespan)
 
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://hotels-for-you.ru",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Подключаем роутеры (после добавления HEAD методов)
 app.include_router(router_main_page)
 app.include_router(router_auth)
 app.include_router(router_hotels)
@@ -51,6 +69,12 @@ app.include_router(router_facilities)
 app.include_router(router_bookings)
 app.include_router(router_images)
 
+# Добавляем HEAD методы ко всем роутерам
+# add_head_methods_to_all_routes(app)
+
+# --------------------------------------------------------------------------------------
+# решение проблемы нкорректной работы документации
+# https://fastapi.tiangolo.com/how-to/custom-docs-ui-assets/#disable-the-automatic-docs
 
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
@@ -75,8 +99,6 @@ async def redoc_html():
         title=app.title + " - ReDoc",   # type: ignore
         redoc_js_url="https://unpkg.com/redoc@next/bundles/redoc.standalone.js",
     )
-
-
 # --------------------------------------------------------------------------------------
 
 if __name__ == "__main__":

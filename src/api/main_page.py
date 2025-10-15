@@ -8,6 +8,7 @@ router = APIRouter(prefix="", tags=["Главная страница"])
     summary="Главная страница",
     description="<h1>Ссылки на документацию (Swagger UI и ReDoc)</h1>",
 )
+@router.head("/", include_in_schema=False)
 async def root():
     data = """<h1>Сервис бронирования отелей</h1><br>
               <h2>BACKEND</h2>
