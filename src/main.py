@@ -18,14 +18,14 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 logging.basicConfig(level=logging.INFO)
 
-from src.init import redis_manager  # from src.init import redis_manager
-from src.api.main_page import router as router_main_page
-from src.api.auth import router as router_auth
-from src.api.hotels import router as router_hotels
-from src.api.rooms import router as router_rooms
-from src.api.bookings import router as router_bookings
-from src.api.facilities import router as router_facilities
-from src.api.images import router as router_images
+from src.init import redis_manager  # noqa: E402
+from src.api.main_page import router as router_main_page  # noqa: E402
+from src.api.auth import router as router_auth  # noqa: E402
+from src.api.hotels import router as router_hotels  # noqa: E402
+from src.api.rooms import router as router_rooms  # noqa: E402
+from src.api.bookings import router as router_bookings  # noqa: E402
+from src.api.facilities import router as router_facilities  # noqa: E402
+from src.api.images import router as router_images  # noqa: E402
 
 
 @asynccontextmanager
@@ -41,9 +41,33 @@ async def lifespan(app: FastAPI):
 
 # Функция для добавления HEAD методов ко всем роутерам
 # def add_head_methods_to_all_routes(app: FastAPI):
+#     """Добавляет отдельные HEAD обработчики для всех GET эндпоинтов"""
+#     from fastapi import Response
+#     from fastapi.routing import APIRoute
+#
+#     # Создаем HEAD обработчик для каждого GET эндпоинта
+#     async def head_handler(*args, **kwargs):
+#         return Response(
+#             status_code=200,
+#             headers={
+#                 "Content-Type": "application/json",
+#                 "Allow": ", ".join(route.methods)
+#             }
+#         )
+#
+#     # Добавляем все HEAD роуты в приложение
 #     for route in app.routes:
-#         if isinstance(route, APIRoute):
-#             route.methods.add("HEAD")
+#         if isinstance(route, APIRoute) and "GET" in route.methods:
+#             # Добавляем параметры из оригинального роута
+#             app.add_api_route(
+#                 path=route.path,
+#                 endpoint=head_handler,
+#                 methods=["HEAD"],
+#                 include_in_schema=False,
+#                 name=f"{route.name}_head" if route.name else None,
+#                 response_class=Response
+#             )
+
 
 app = FastAPI(docs_url=None, redoc_url=None, lifespan=lifespan)
 
@@ -60,7 +84,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Подключаем роутеры (после добавления HEAD методов)
 app.include_router(router_main_page)
 app.include_router(router_auth)
 app.include_router(router_hotels)
@@ -76,18 +99,19 @@ app.include_router(router_images)
 # решение проблемы нкорректной работы документации
 # https://fastapi.tiangolo.com/how-to/custom-docs-ui-assets/#disable-the-automatic-docs
 
+
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
     return get_swagger_ui_html(
-        openapi_url=app.openapi_url,    # type: ignore
-        title=app.title + " - Swagger UI",    # type: ignore
-        oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,    # type: ignore
+        openapi_url=app.openapi_url,  # type: ignore
+        title=app.title + " - Swagger UI",  # type: ignore
+        oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,  # type: ignore
         swagger_js_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js",
         swagger_css_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css",
     )
 
 
-@app.get(app.swagger_ui_oauth2_redirect_url, include_in_schema=False)    # type: ignore
+@app.get(app.swagger_ui_oauth2_redirect_url, include_in_schema=False)  # type: ignore
 async def swagger_ui_redirect():
     return get_swagger_ui_oauth2_redirect_html()
 
@@ -95,10 +119,12 @@ async def swagger_ui_redirect():
 @app.get("/redoc", include_in_schema=False)
 async def redoc_html():
     return get_redoc_html(
-        openapi_url=app.openapi_url,    # type: ignore
-        title=app.title + " - ReDoc",   # type: ignore
+        openapi_url=app.openapi_url,  # type: ignore
+        title=app.title + " - ReDoc",  # type: ignore
         redoc_js_url="https://unpkg.com/redoc@next/bundles/redoc.standalone.js",
     )
+
+
 # --------------------------------------------------------------------------------------
 
 if __name__ == "__main__":

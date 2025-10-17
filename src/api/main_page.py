@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse
 
 router = APIRouter(prefix="", tags=["Главная страница"])
 
+
 @router.get(
     "/",
     summary="Главная страница",
@@ -10,10 +11,21 @@ router = APIRouter(prefix="", tags=["Главная страница"])
 )
 @router.head("/", include_in_schema=False)
 async def root():
-    data = """<h1>Сервис бронирования отелей</h1><br>
-              <h2>BACKEND</h2>
-              <p>
-                <a href="./docs">Документация Swagger UI</a><br>
-                <a href="./redoc">Документация ReDoc</a>
-              </p>"""
+    data = """<!DOCTYPE html>
+              <html lang="ru">
+              <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Сервис бронирования отелей</title>
+                <meta name="description" content="Бронирование номеров отелей">
+              </head>
+              <body>
+                <h1>Сервис бронирования отелей</h1><br>
+                <h2>BACKEND</h2>
+                <p>
+                  <a href="./docs">Документация Swagger UI</a><br>
+                  <a href="./redoc">Документация ReDoc</a>
+                </p>
+                </body>
+                </html>"""
     return HTMLResponse(content=data)

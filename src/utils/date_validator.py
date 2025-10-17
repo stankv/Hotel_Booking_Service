@@ -10,10 +10,10 @@ def validate_date_format(date_str: str) -> date:
     """
     try:
         # Проверяем базовый формат
-        if len(date_str) != 10 or date_str[4] != '-' or date_str[7] != '-':
+        if len(date_str) != 10 or date_str[4] != "-" or date_str[7] != "-":
             raise ValueError("Invalid date format")
 
-        year, month, day = map(int, date_str.split('-'))
+        year, month, day = map(int, date_str.split("-"))
 
         # Проверяем допустимые диапазоны
         if year < 1900 or year > 2100:
@@ -34,6 +34,7 @@ def validate_date_format(date_str: str) -> date:
 
     except (ValueError, TypeError) as e:
         raise ValueError(f"Invalid date: {str(e)}")
+
 
 def check_date_to_after_date_from(date_from: date, date_to: date) -> None:
     if date_to <= date_from:

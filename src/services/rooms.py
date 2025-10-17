@@ -1,6 +1,10 @@
 from datetime import date
 
-from src.exceptions import ObjectNotFoundException, RoomNotFoundException, RoomHasActiveBookingsException
+from src.exceptions import (
+    ObjectNotFoundException,
+    RoomNotFoundException,
+    RoomHasActiveBookingsException,
+)
 from src.schemas.facilities import RoomFacilityAdd
 from src.schemas.rooms import RoomAddRequest, Room, RoomAdd, RoomPatchRequest, RoomPatch
 from src.services.base import BaseService
@@ -11,10 +15,10 @@ from src.utils.room_validator import RoomValidator
 
 class RoomService(BaseService):
     async def get_filtered_by_time(
-            self,
-            hotel_id: int,
-            date_from: date,
-            date_to: date,
+        self,
+        hotel_id: int,
+        date_from: date,
+        date_to: date,
     ):
         # Валидируем даты через сервисные исключения
         validate_dates(date_from, date_to)
@@ -31,9 +35,9 @@ class RoomService(BaseService):
         return await self.db.rooms.get_one_with_relationships(id=room_id, hotel_id=hotel_id)
 
     async def create_room(
-            self,
-            hotel_id: int,
-            room_data: RoomAddRequest,
+        self,
+        hotel_id: int,
+        room_data: RoomAddRequest,
     ):
         # Проверяем существование отеля
         await HotelService(self.db).get_hotel_with_check(hotel_id)
@@ -51,7 +55,8 @@ class RoomService(BaseService):
         # Создаем связи с удобствами
         if room_data.facilities_ids:
             rooms_facilities_data = [
-                RoomFacilityAdd(room_id=room.id, facility_id=f_id) for f_id in room_data.facilities_ids
+                RoomFacilityAdd(room_id=room.id, facility_id=f_id)
+                for f_id in room_data.facilities_ids
             ]
             await self.db.rooms_facilities.add_bulk(rooms_facilities_data)
 
@@ -59,10 +64,10 @@ class RoomService(BaseService):
         return room
 
     async def edit_room(
-            self,
-            hotel_id: int,
-            room_id: int,
-            room_data: RoomAddRequest,
+        self,
+        hotel_id: int,
+        room_id: int,
+        room_data: RoomAddRequest,
     ):
         await HotelService(self.db).get_hotel_with_check(hotel_id)
         await self.get_room_with_check(room_id)
@@ -75,16 +80,18 @@ class RoomService(BaseService):
 
         _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
         await self.db.rooms.edit(_room_data, id=room_id)
-        await self.db.rooms_facilities.set_room_facilities(room_id, facilities_ids=room_data.facilities_ids)
+        await self.db.rooms_facilities.set_room_facilities(
+            room_id, facilities_ids=room_data.facilities_ids
+        )
         await self.db.commit()
         # Возвращаем обновленный номер с отношениями (удобствами)
         return await self.db.rooms.get_one_with_relationships(id=room_id, hotel_id=hotel_id)
 
     async def partially_edit_room(
-            self,
-            hotel_id: int,
-            room_id: int,
-            room_data: RoomPatchRequest,
+        self,
+        hotel_id: int,
+        room_id: int,
+        room_data: RoomPatchRequest,
     ):
         await HotelService(self.db).get_hotel_with_check(hotel_id)
         current_room = await self.get_room_with_check(room_id)
@@ -115,7 +122,6 @@ class RoomService(BaseService):
 
         # Возвращаем обновленный номер с отношениями
         return await self.db.rooms.get_one_with_relationships(id=room_id, hotel_id=hotel_id)
-
 
     async def delete_room(self, hotel_id: int, room_id: int):
         await HotelService(self.db).get_hotel_with_check(hotel_id)

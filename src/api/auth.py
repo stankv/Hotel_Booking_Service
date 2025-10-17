@@ -1,12 +1,18 @@
-from debugpy.adapter import access_token
-from fastapi import APIRouter, HTTPException, Response, Request
+from fastapi import APIRouter, Response, Request
 
 from src.api.dependencies import UserIdDep, DBDep
 from src.config import settings
-from src.exceptions import ObjectAlreadyExistsException, IncorrectPasswordHTTPException, IncorrectPasswordException, \
-    EmailNotRegisteredHTTPException, EmailNotRegisteredException, UserAlreadyExistsException, \
-    UserEmailAlreadyExistsHTTPException, IncorrectPasswordRegisterException, IncorrectPasswordRegisterHTTPException
-from src.schemas.users import UserRequestAdd, UserAdd
+from src.exceptions import (
+    IncorrectPasswordHTTPException,
+    IncorrectPasswordException,
+    EmailNotRegisteredHTTPException,
+    EmailNotRegisteredException,
+    UserAlreadyExistsException,
+    UserEmailAlreadyExistsHTTPException,
+    IncorrectPasswordRegisterException,
+    IncorrectPasswordRegisterHTTPException,
+)
+from src.schemas.users import UserRequestAdd
 from src.services.auth import AuthService
 
 router = APIRouter(prefix="/auth", tags=["Авторизация и аутентификация"])
@@ -16,7 +22,7 @@ router = APIRouter(prefix="/auth", tags=["Авторизация и аутент
     "/register",
     summary="Регистрация",
     description=f"<h1>Регистрация нового пользователя</h1>"
-                f"<p><b>Пароль должен быть не меньше {settings.MIN_LENGTH_PASSWORD} символов!</b></p>",
+    f"<p><b>Пароль должен быть не меньше {settings.MIN_LENGTH_PASSWORD} символов!</b></p>",
 )
 async def register_user(
     data: UserRequestAdd,

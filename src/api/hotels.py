@@ -3,12 +3,24 @@ from datetime import date
 from fastapi import Query, APIRouter, Body
 from fastapi_cache.decorator import cache
 
-from src.exceptions import HotelNotFoundHTTPException, EmptyTitleFieldException, \
-    EmptyTitleFieldHTTPException, EmptyLocationFieldException, EmptyLocationFieldHTTPException, \
-    ObjectAlreadyExistsException, ObjectAlreadyExistsHTTPException, HotelNotFoundException, EmptyAllFieldsException, \
-    EmptyAllFieldsHTTPException, InvalidDateException, InvalidDateHTTPException, DateFromAfterDateToException, \
-    DateFromAfterDateToHTTPException, HotelHasRoomsWithActiveBookingsException, \
-    HotelHasRoomsWithActiveBookingsHTTPException
+from src.exceptions import (
+    HotelNotFoundHTTPException,
+    EmptyTitleFieldException,
+    EmptyTitleFieldHTTPException,
+    EmptyLocationFieldException,
+    EmptyLocationFieldHTTPException,
+    ObjectAlreadyExistsException,
+    ObjectAlreadyExistsHTTPException,
+    HotelNotFoundException,
+    EmptyAllFieldsException,
+    EmptyAllFieldsHTTPException,
+    InvalidDateException,
+    InvalidDateHTTPException,
+    DateFromAfterDateToException,
+    DateFromAfterDateToHTTPException,
+    HotelHasRoomsWithActiveBookingsException,
+    HotelHasRoomsWithActiveBookingsHTTPException,
+)
 from src.schemas.hotels import HotelPatch, HotelAdd
 from src.api.dependencies import PaginationDep, DBDep
 from src.services.hotels import HotelService

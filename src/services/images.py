@@ -19,7 +19,7 @@ class ImagesService(BaseService):
         image_path = f"src/static/images/{file.filename}"
         # Сохраняем файл
         with open(image_path, "wb+") as new_file:
-            shutil.copyfileobj(file.file, new_file)    # копируем загруженную картинку в new_file
+            shutil.copyfileobj(file.file, new_file)  # копируем загруженную картинку в new_file
 
         # Добавляем задачу по изменению размера
         # resize_image.delay(image_path)

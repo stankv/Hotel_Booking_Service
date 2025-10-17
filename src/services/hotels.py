@@ -1,8 +1,14 @@
 from datetime import date
 
-from src.exceptions import ObjectNotFoundException, HotelNotFoundException, \
-    EmptyTitleFieldException, EmptyLocationFieldException, ObjectAlreadyExistsException, EmptyAllFieldsException, \
-    HotelHasRoomsWithActiveBookingsException
+from src.exceptions import (
+    ObjectNotFoundException,
+    HotelNotFoundException,
+    EmptyTitleFieldException,
+    EmptyLocationFieldException,
+    ObjectAlreadyExistsException,
+    EmptyAllFieldsException,
+    HotelHasRoomsWithActiveBookingsException,
+)
 from src.schemas.hotels import HotelAdd, HotelPatch, Hotel
 from src.services.base import BaseService
 from src.utils.date_validator import validate_dates, check_date_to_after_date_from
@@ -10,12 +16,12 @@ from src.utils.date_validator import validate_dates, check_date_to_after_date_fr
 
 class HotelService(BaseService):
     async def get_filtered_by_time(
-            self,
-            pagination,
-            location: str | None,
-            title: str | None,
-            date_from: date,
-            date_to: date,
+        self,
+        pagination,
+        location: str | None,
+        title: str | None,
+        date_from: date,
+        date_to: date,
     ):
         # Валидируем даты через сервисные исключения
         validate_dates(date_from, date_to)
@@ -72,7 +78,9 @@ class HotelService(BaseService):
         await self.db.hotels.edit(data, id=hotel_id)
         await self.db.commit()
 
-    async def edit_hotel_partially(self, hotel_id: int, data: HotelPatch, exclude_unset: bool = False):
+    async def edit_hotel_partially(
+        self, hotel_id: int, data: HotelPatch, exclude_unset: bool = False
+    ):
         await self.get_hotel_with_check(hotel_id=hotel_id)
         if (not data.title.strip()) and (not data.location.strip()):
             raise EmptyAllFieldsException
@@ -85,7 +93,7 @@ class HotelService(BaseService):
 
     async def delete_hotel(self, hotel_id: int):
         # Проверяем существование отеля
-        hotel = await self.get_hotel_with_check(hotel_id)
+        await self.get_hotel_with_check(hotel_id)
 
         # Получаем все номера отеля
         try:
@@ -99,6 +107,7 @@ class HotelService(BaseService):
             # Если активных бронирований нет - удаляем все номера через RoomService
             # Ленивый импорт чтобы избежать циклической зависимости
             from src.services.rooms import RoomService
+
             for room in rooms:
                 room_service = RoomService(self.db)
                 await room_service.delete_room(hotel_id, room.id)

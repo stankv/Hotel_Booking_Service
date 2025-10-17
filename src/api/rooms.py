@@ -3,14 +3,34 @@ from datetime import date
 from fastapi import APIRouter, Body, Query
 from fastapi_cache.decorator import cache
 
-from src.exceptions import HotelNotFoundHTTPException, \
-    RoomNotFoundHTTPException, RoomNotFoundException, HotelNotFoundException, RoomHasActiveBookingsException, \
-    RoomHasActiveBookingsHTTPException, InvalidDateException, InvalidDateHTTPException, DateFromAfterDateToException, \
-    DateFromAfterDateToHTTPException, EmptyAllFieldsException, EmptyAllFieldsHTTPException, EmptyTitleFieldException, \
-    EmptyTitleFieldHTTPException, EmptyPriceFieldException, EmptyPriceFieldHTTPException, EmptyQuantityFieldException, \
-    EmptyQuantityFieldHTTPException, NegativePriceException, NegativePriceHTTPException, NegativeQuantityException, \
-    NegativeQuantityHTTPException, RoomAlreadyExistsException, RoomAlreadyExistsHTTPException, \
-    FacilityNotFoundException, FacilityNotFoundHTTPException
+from src.exceptions import (
+    HotelNotFoundHTTPException,
+    RoomNotFoundHTTPException,
+    RoomNotFoundException,
+    HotelNotFoundException,
+    RoomHasActiveBookingsException,
+    RoomHasActiveBookingsHTTPException,
+    InvalidDateException,
+    InvalidDateHTTPException,
+    DateFromAfterDateToException,
+    DateFromAfterDateToHTTPException,
+    EmptyAllFieldsException,
+    EmptyAllFieldsHTTPException,
+    EmptyTitleFieldException,
+    EmptyTitleFieldHTTPException,
+    EmptyPriceFieldException,
+    EmptyPriceFieldHTTPException,
+    EmptyQuantityFieldException,
+    EmptyQuantityFieldHTTPException,
+    NegativePriceException,
+    NegativePriceHTTPException,
+    NegativeQuantityException,
+    NegativeQuantityHTTPException,
+    RoomAlreadyExistsException,
+    RoomAlreadyExistsHTTPException,
+    FacilityNotFoundException,
+    FacilityNotFoundHTTPException,
+)
 from src.schemas.rooms import RoomAddRequest, RoomPatchRequest
 from src.api.dependencies import DBDep
 from src.services.rooms import RoomService

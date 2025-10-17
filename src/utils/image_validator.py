@@ -8,16 +8,10 @@ from src.exceptions import InvalidImageException, ImageTooLargeException
 
 class ImageValidator:
     # Допустимые MIME-типы изображений
-    ALLOWED_MIME_TYPES = {
-        'image/jpeg',
-        'image/png',
-        'image/gif',
-        'image/webp',
-        'image/bmp'
-    }
+    ALLOWED_MIME_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp", "image/bmp"}
 
     # Допустимые расширения файлов
-    ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'}
+    ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"}
 
     # Максимальный размер файла (10 МБ)
     MAX_FILE_SIZE = 10 * 1024 * 1024

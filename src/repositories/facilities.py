@@ -25,9 +25,9 @@ class RoomsFacilitiesRepository(BaseRepository):
         ids_to_insert: list[int] = list(set(facilities_ids) - set(current_facilities_ids))
 
         if ids_to_delete:
-            delete_m2m_facilities_stmt = delete(self.model).filter(    # type: ignore
-                self.model.room_id == room_id,                 # type: ignore
-                self.model.facility_id.in_(ids_to_delete),             # type: ignore
+            delete_m2m_facilities_stmt = delete(self.model).filter(  # type: ignore
+                self.model.room_id == room_id,  # type: ignore
+                self.model.facility_id.in_(ids_to_delete),  # type: ignore
             )
             await self.session.execute(delete_m2m_facilities_stmt)
 

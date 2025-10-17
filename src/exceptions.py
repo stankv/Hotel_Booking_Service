@@ -19,7 +19,7 @@ class EmptyFieldException(HotelBookingServiceException):
 
 
 class EmptyTitleFieldException(EmptyFieldException):
-        detail = "Не передано название"
+    detail = "Не передано название"
 
 
 class EmptyLocationFieldException(EmptyFieldException):
@@ -125,6 +125,7 @@ class HotelBookingServiceHTTPException(HTTPException):
 class ObjectAlreadyExistsHTTPException(HotelBookingServiceHTTPException):
     status_code = 409
     detail = "Объект уже существует"
+
 
 class HotelNotFoundHTTPException(HotelBookingServiceHTTPException):
     status_code = 404
@@ -238,6 +239,7 @@ class FacilityNotFoundHTTPException(HotelBookingServiceHTTPException):
 class InvalidImageHTTPException(HotelBookingServiceHTTPException):
     status_code = 400
     detail = "Загружаемый файл не является изображением!"
+
 
 class ImageTooLargeHTTPException(HotelBookingServiceHTTPException):
     status_code = 400

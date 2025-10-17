@@ -1,7 +1,12 @@
 from src.exceptions import (
-    EmptyAllFieldsException, EmptyTitleFieldException, EmptyPriceFieldException,
-    EmptyQuantityFieldException, NegativePriceException, NegativeQuantityException,
-    RoomAlreadyExistsException, FacilityNotFoundException
+    EmptyAllFieldsException,
+    EmptyTitleFieldException,
+    EmptyPriceFieldException,
+    EmptyQuantityFieldException,
+    NegativePriceException,
+    NegativeQuantityException,
+    RoomAlreadyExistsException,
+    FacilityNotFoundException,
 )
 from src.schemas.rooms import RoomAddRequest, RoomPatchRequest
 
@@ -9,9 +14,7 @@ from src.schemas.rooms import RoomAddRequest, RoomPatchRequest
 class RoomValidator:
     @staticmethod
     async def validate_room_data(
-            db,
-            room_data: RoomAddRequest,
-            exclude_room_id: int | None = None
+        db, room_data: RoomAddRequest, exclude_room_id: int | None = None
     ) -> None:
         """
         Валидация данных номера (используется при создании и обновлении)
@@ -22,10 +25,12 @@ class RoomValidator:
             exclude_room_id: ID номера для исключения при проверке уникальности
         """
         # Проверка 1: Все ли поля пустые
-        if (not room_data.title and
-                not room_data.description and
-                room_data.price is None and
-                room_data.quantity is None):
+        if (
+            not room_data.title
+            and not room_data.description
+            and room_data.price is None
+            and room_data.quantity is None
+        ):
             raise EmptyAllFieldsException
 
         # Проверка 2: Обязательное поле title
@@ -37,8 +42,10 @@ class RoomValidator:
 
         # Проверка 3: Уникальность title (регистронезависимо), исключая текущий номер
         existing_rooms = await db.rooms.get_filtered()
-        if any(room.title.lower() == room_data.title.lower() and
-               room.id != exclude_room_id for room in existing_rooms):
+        if any(
+            room.title.lower() == room_data.title.lower() and room.id != exclude_room_id
+            for room in existing_rooms
+        ):
             raise RoomAlreadyExistsException
 
         # Проверка 4: Обязательное поле price и его валидность
@@ -72,10 +79,7 @@ class RoomValidator:
 
     @staticmethod
     async def validate_partial_room_data(
-            db,
-            room_data: RoomPatchRequest,
-            current_room_data,
-            exclude_room_id: int | None = None
+        db, room_data: RoomPatchRequest, current_room_data, exclude_room_id: int | None = None
     ) -> None:
         """
         Валидация данных номера для частичного обновления
@@ -85,9 +89,9 @@ class RoomValidator:
         data_dict = room_data.model_dump(exclude_unset=True)
 
         # Удаляем facilities_ids из проверки на пустоту, так как это отдельный случай
-        check_dict = {k: v for k, v in data_dict.items() if k != 'facilities_ids'}
+        check_dict = {k: v for k, v in data_dict.items() if k != "facilities_ids"}
 
-        if not check_dict and not data_dict.get('facilities_ids'):
+        if not check_dict and not data_dict.get("facilities_ids"):
             raise EmptyAllFieldsException
 
         # Проверка 2: Если передан title - проверяем его
@@ -100,8 +104,10 @@ class RoomValidator:
 
             # Проверяем уникальность (исключая текущий номер)
             existing_rooms = await db.rooms.get_filtered()
-            if any(room.title.lower() == room_data.title.lower() and
-                   room.id != exclude_room_id for room in existing_rooms):
+            if any(
+                room.title.lower() == room_data.title.lower() and room.id != exclude_room_id
+                for room in existing_rooms
+            ):
                 raise RoomAlreadyExistsException
 
         # Проверка 3: Если передан price - проверяем его
