@@ -12,7 +12,7 @@ from src.exceptions import (
     IncorrectPasswordRegisterException,
     IncorrectPasswordRegisterHTTPException,
 )
-from src.schemas.users import UserRequestAdd
+from src.schemas.users import UserRequestAddDTO
 from src.services.auth import AuthService
 
 router = APIRouter(prefix="/auth", tags=["Авторизация и аутентификация"])
@@ -25,7 +25,7 @@ router = APIRouter(prefix="/auth", tags=["Авторизация и аутент
     f"<p><b>Пароль должен быть не меньше {settings.MIN_LENGTH_PASSWORD} символов!</b></p>",
 )
 async def register_user(
-    data: UserRequestAdd,
+    data: UserRequestAddDTO,
     db: DBDep,
 ):
     try:
@@ -43,7 +43,7 @@ async def register_user(
     description="<h1>Аутентификация (вход) пользователя</h1>",
 )
 async def login_user(
-    data: UserRequestAdd,
+    data: UserRequestAddDTO,
     response: Response,
     db: DBDep,
 ):

@@ -5,8 +5,14 @@ from src.exceptions import (
     RoomNotFoundException,
     RoomHasActiveBookingsException,
 )
-from src.schemas.facilities import RoomFacilityAdd
-from src.schemas.rooms import RoomAddRequest, Room, RoomAdd, RoomPatchRequest, RoomPatch
+from src.schemas.facilities import RoomFacilityAddDTO
+from src.schemas.rooms import (
+    RoomAddRequestDTO,
+    RoomDTO,
+    RoomAddDTO,
+    RoomPatchRequestDTO,
+    RoomPatchDTO,
+)
 from src.services.base import BaseService
 from src.services.hotels import HotelService
 from src.utils.date_validator import validate_dates, check_date_to_after_date_from
@@ -37,7 +43,7 @@ class RoomService(BaseService):
     async def create_room(
         self,
         hotel_id: int,
-        room_data: RoomAddRequest,
+        room_data: RoomAddRequestDTO,
     ):
         # Проверяем существование отеля
         await HotelService(self.db).get_hotel_with_check(hotel_id)
@@ -49,13 +55,13 @@ class RoomService(BaseService):
         RoomValidator.clean_room_description(room_data)
 
         # Создаем номер
-        _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
-        room: Room = await self.db.rooms.add(_room_data)
+        _room_data = RoomAddDTO(hotel_id=hotel_id, **room_data.model_dump())
+        room: RoomDTO = await self.db.rooms.add(_room_data)
 
         # Создаем связи с удобствами
         if room_data.facilities_ids:
             rooms_facilities_data = [
-                RoomFacilityAdd(room_id=room.id, facility_id=f_id)
+                RoomFacilityAddDTO(room_id=room.id, facility_id=f_id)
                 for f_id in room_data.facilities_ids
             ]
             await self.db.rooms_facilities.add_bulk(rooms_facilities_data)
@@ -67,7 +73,7 @@ class RoomService(BaseService):
         self,
         hotel_id: int,
         room_id: int,
-        room_data: RoomAddRequest,
+        room_data: RoomAddRequestDTO,
     ):
         await HotelService(self.db).get_hotel_with_check(hotel_id)
         await self.get_room_with_check(room_id)
@@ -78,7 +84,7 @@ class RoomService(BaseService):
         # Очищаем description от пробелов
         RoomValidator.clean_room_description(room_data)
 
-        _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
+        _room_data = RoomAddDTO(hotel_id=hotel_id, **room_data.model_dump())
         await self.db.rooms.edit(_room_data, id=room_id)
         await self.db.rooms_facilities.set_room_facilities(
             room_id, facilities_ids=room_data.facilities_ids
@@ -91,7 +97,7 @@ class RoomService(BaseService):
         self,
         hotel_id: int,
         room_id: int,
-        room_data: RoomPatchRequest,
+        room_data: RoomPatchRequestDTO,
     ):
         await HotelService(self.db).get_hotel_with_check(hotel_id)
         current_room = await self.get_room_with_check(room_id)
@@ -107,7 +113,7 @@ class RoomService(BaseService):
 
         # Подготавливаем данные для обновления
         _room_data_dict = room_data.model_dump(exclude_unset=True)
-        _room_data = RoomPatch(hotel_id=hotel_id, **_room_data_dict)
+        _room_data = RoomPatchDTO(hotel_id=hotel_id, **_room_data_dict)
 
         # Обновляем номер
         await self.db.rooms.edit(_room_data, exclude_unset=True, id=room_id, hotel_id=hotel_id)
@@ -135,7 +141,7 @@ class RoomService(BaseService):
         await self.db.rooms.delete(id=room_id, hotel_id=hotel_id)
         await self.db.commit()
 
-    async def get_room_with_check(self, room_id: int) -> Room:
+    async def get_room_with_check(self, room_id: int) -> RoomDTO:
         try:
             return await self.db.rooms.get_one(id=room_id)
         except ObjectNotFoundException:

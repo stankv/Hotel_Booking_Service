@@ -1,21 +1,21 @@
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 
-class UserRequestAdd(BaseModel):
+class UserRequestAddDTO(BaseModel):
     email: EmailStr
     password: str
 
 
-class UserAdd(BaseModel):
+class UserAddDTO(BaseModel):
     email: EmailStr
     hashed_password: str
 
 
-class User(BaseModel):
+class UserDTO(BaseModel):
     id: int
     email: EmailStr
     model_config = ConfigDict(from_attributes=True)
 
 
-class UserWithHashedPassword(User):
+class UserWithHashedPasswordDTO(UserDTO):
     hashed_password: str

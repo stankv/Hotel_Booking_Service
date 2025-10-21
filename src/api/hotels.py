@@ -21,7 +21,7 @@ from src.exceptions import (
     HotelHasRoomsWithActiveBookingsException,
     HotelHasRoomsWithActiveBookingsHTTPException,
 )
-from src.schemas.hotels import HotelPatch, HotelAdd
+from src.schemas.hotels import HotelPatchDTO, HotelAddDTO
 from src.api.dependencies import PaginationDep, DBDep
 from src.services.hotels import HotelService
 
@@ -100,7 +100,7 @@ async def get_hotel(hotel_id: int, db: DBDep):
 )
 async def create_hotel(
     db: DBDep,
-    hotel_data: HotelAdd = Body(
+    hotel_data: HotelAddDTO = Body(
         openapi_examples={
             "1": {
                 "summary": "Сочи",
@@ -137,7 +137,7 @@ async def create_hotel(
     summary="Изменение ВСЕХ данных отеля",
     description="<h1>Ввод title И location обязателен</h1>",
 )
-async def update_hotel(hotel_id: int, hotel_data: HotelAdd, db: DBDep):
+async def update_hotel(hotel_id: int, hotel_data: HotelAddDTO, db: DBDep):
     try:
         await HotelService(db).edit_hotel(hotel_id, hotel_data)
     except HotelNotFoundException:
@@ -156,7 +156,7 @@ async def update_hotel(hotel_id: int, hotel_data: HotelAdd, db: DBDep):
     summary="Частичное изменение данных отеля",
     description="<h1>Можно изменить title, а можно location</h1>",
 )
-async def partially_update_hotel(hotel_id: int, hotel_data: HotelPatch, db: DBDep):
+async def partially_update_hotel(hotel_id: int, hotel_data: HotelPatchDTO, db: DBDep):
     try:
         await HotelService(db).edit_hotel_partially(hotel_id, hotel_data, exclude_unset=True)
     except HotelNotFoundException:

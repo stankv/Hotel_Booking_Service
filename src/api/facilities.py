@@ -8,7 +8,7 @@ from src.exceptions import (
     EmptyTitleFieldHTTPException,
     EmptyTitleFieldException,
 )
-from src.schemas.facilities import FacilityAdd
+from src.schemas.facilities import FacilityAddDTO
 from src.services.facilities import FacilityService
 
 router = APIRouter(prefix="/facilities", tags=["Удобства номеров"])
@@ -25,7 +25,7 @@ async def get_facilities(db: DBDep):
     summary="Добавление нового удобства",
     description="<h1>Добавление нового удобства в список всех удобств</h1>",
 )
-async def create_facility(db: DBDep, facility_data: FacilityAdd = Body()):
+async def create_facility(db: DBDep, facility_data: FacilityAddDTO = Body()):
     try:
         facility = await FacilityService(db).create_facility(facility_data)
     except EmptyTitleFieldException:

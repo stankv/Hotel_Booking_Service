@@ -7,7 +7,7 @@ from src.repositories.base import BaseRepository
 from src.models.hotels import HotelsOrm
 from src.repositories.mappers.mappers import HotelDataMapper
 from src.repositories.utils import rooms_ids_for_booking
-from src.schemas.hotels import Hotel
+from src.schemas.hotels import HotelDTO
 
 
 class HotelsRepository(BaseRepository):
@@ -25,7 +25,7 @@ class HotelsRepository(BaseRepository):
         location,
         limit,
         offset,
-    ) -> list[Hotel]:  # возвращает список pydantic-схем
+    ) -> list[HotelDTO]:  # возвращает список pydantic-схем
         query = select(HotelsOrm)
         if title:
             query = query.filter(func.lower(HotelsOrm.title).contains(title.strip().lower()))

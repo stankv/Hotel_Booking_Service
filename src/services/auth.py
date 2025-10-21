@@ -12,7 +12,7 @@ from src.exceptions import (
     UserAlreadyExistsException,
     IncorrectPasswordRegisterException,
 )
-from src.schemas.users import UserRequestAdd, UserAdd
+from src.schemas.users import UserRequestAddDTO, UserAddDTO
 from src.services.base import BaseService
 
 
@@ -42,18 +42,18 @@ class AuthService(BaseService):
         except jwt.exceptions.DecodeError:
             raise IncorrectTokenException
 
-    async def register_user(self, data: UserRequestAdd):
+    async def register_user(self, data: UserRequestAddDTO):
         if len(data.password.strip()) < settings.MIN_LENGTH_PASSWORD:
             raise IncorrectPasswordRegisterException
         hashed_password = self.hash_password(data.password)
-        new_user_data = UserAdd(email=data.email, hashed_password=hashed_password)
+        new_user_data = UserAddDTO(email=data.email, hashed_password=hashed_password)
         try:
             await self.db.users.add(new_user_data)
             await self.db.commit()
         except ObjectAlreadyExistsException as ex:
             raise UserAlreadyExistsException from ex
 
-    async def login_user(self, data: UserRequestAdd) -> str:
+    async def login_user(self, data: UserRequestAddDTO) -> str:
         user = await self.db.users.get_user_with_hashed_password(email=data.email)
         if not user:
             raise EmailNotRegisteredException

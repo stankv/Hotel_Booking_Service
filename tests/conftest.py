@@ -13,8 +13,8 @@ from src.config import settings
 from src.database import Base, engine_null_pool, async_session_maker_null_pool
 from src.main import app
 from src.models import *  # noqa
-from src.schemas.hotels import HotelAdd
-from src.schemas.rooms import RoomAdd
+from src.schemas.hotels import HotelAddDTO
+from src.schemas.rooms import RoomAddDTO
 from src.utils.db_manager import DBManager
 
 
@@ -48,8 +48,8 @@ async def setup_database(check_test_mode):
     with open("tests/mock_rooms.json", encoding="utf-8") as file_rooms:
         rooms = json.load(file_rooms)
 
-    hotels = [HotelAdd.model_validate(hotel) for hotel in hotels]
-    rooms = [RoomAdd.model_validate(room) for room in rooms]
+    hotels = [HotelAddDTO.model_validate(hotel) for hotel in hotels]
+    rooms = [RoomAddDTO.model_validate(room) for room in rooms]
 
     async with DBManager(session_factory=async_session_maker_null_pool) as db_:
         await db_.hotels.add_bulk(hotels)

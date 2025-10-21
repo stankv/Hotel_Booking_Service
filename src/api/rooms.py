@@ -31,7 +31,7 @@ from src.exceptions import (
     FacilityNotFoundException,
     FacilityNotFoundHTTPException,
 )
-from src.schemas.rooms import RoomAddRequest, RoomPatchRequest
+from src.schemas.rooms import RoomAddRequestDTO, RoomPatchRequestDTO
 from src.api.dependencies import DBDep
 from src.services.rooms import RoomService
 
@@ -80,7 +80,7 @@ async def get_room(room_id: int, hotel_id: int, db: DBDep):
     summary="Добавление нового номера",
     description="<h1>Добавление нового номера</h1>",
 )
-async def create_room(hotel_id: int, db: DBDep, room_data: RoomAddRequest = Body()):
+async def create_room(hotel_id: int, db: DBDep, room_data: RoomAddRequestDTO = Body()):
     try:
         room = await RoomService(db).create_room(hotel_id, room_data)
     except HotelNotFoundException:
@@ -109,7 +109,7 @@ async def create_room(hotel_id: int, db: DBDep, room_data: RoomAddRequest = Body
     summary="Изменение ВСЕХ данных номера",
     description="<h1>Ввод данных для всех полей обязателен</h1>",
 )
-async def update_room(hotel_id: int, room_id: int, room_data: RoomAddRequest, db: DBDep):
+async def update_room(hotel_id: int, room_id: int, room_data: RoomAddRequestDTO, db: DBDep):
     try:
         room = await RoomService(db).edit_room(hotel_id, room_id, room_data)
     except HotelNotFoundException:
@@ -141,7 +141,7 @@ async def update_room(hotel_id: int, room_id: int, room_data: RoomAddRequest, db
     description="<h1>Можно изменить любое поле</h1>",
 )
 async def partially_update_room(
-    hotel_id: int, room_id: int, room_data: RoomPatchRequest, db: DBDep
+    hotel_id: int, room_id: int, room_data: RoomPatchRequestDTO, db: DBDep
 ):
     try:
         room = await RoomService(db).partially_edit_room(hotel_id, room_id, room_data)

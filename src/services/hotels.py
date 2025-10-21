@@ -9,7 +9,7 @@ from src.exceptions import (
     EmptyAllFieldsException,
     HotelHasRoomsWithActiveBookingsException,
 )
-from src.schemas.hotels import HotelAdd, HotelPatch, Hotel
+from src.schemas.hotels import HotelAddDTO, HotelPatchDTO, HotelDTO
 from src.services.base import BaseService
 from src.utils.date_validator import validate_dates, check_date_to_after_date_from
 
@@ -37,7 +37,7 @@ class HotelService(BaseService):
             offset=per_page * (pagination.page - 1),
         )
 
-    async def get_hotel_with_check(self, hotel_id: int) -> Hotel:
+    async def get_hotel_with_check(self, hotel_id: int) -> HotelDTO:
         try:
             return await self.db.hotels.get_one(id=hotel_id)
         except ObjectNotFoundException as ex:
@@ -49,7 +49,7 @@ class HotelService(BaseService):
     async def get_hotel(self, hotel_id: int):
         return await self.db.hotels.get_one(id=hotel_id)
 
-    async def add_hotel(self, data: HotelAdd):
+    async def add_hotel(self, data: HotelAddDTO):
         if (not data.title.strip()) and (not data.location.strip()):
             raise EmptyAllFieldsException
         if not data.title.strip():
@@ -65,7 +65,7 @@ class HotelService(BaseService):
         await self.db.commit()
         return hotel
 
-    async def edit_hotel(self, hotel_id: int, data: HotelAdd):
+    async def edit_hotel(self, hotel_id: int, data: HotelAddDTO):
         await self.get_hotel_with_check(hotel_id=hotel_id)
         if (not data.title.strip()) and (not data.location.strip()):
             raise EmptyAllFieldsException
@@ -79,7 +79,7 @@ class HotelService(BaseService):
         await self.db.commit()
 
     async def edit_hotel_partially(
-        self, hotel_id: int, data: HotelPatch, exclude_unset: bool = False
+        self, hotel_id: int, data: HotelPatchDTO, exclude_unset: bool = False
     ):
         await self.get_hotel_with_check(hotel_id=hotel_id)
         if (not data.title.strip()) and (not data.location.strip()):

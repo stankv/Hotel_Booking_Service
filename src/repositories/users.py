@@ -4,7 +4,7 @@ from sqlalchemy import select
 from src.repositories.base import BaseRepository
 from src.models.users import UsersOrm
 from src.repositories.mappers.mappers import UserDataMapper
-from src.schemas.users import UserWithHashedPassword
+from src.schemas.users import UserWithHashedPasswordDTO
 
 
 class UsersRepository(BaseRepository):
@@ -15,4 +15,4 @@ class UsersRepository(BaseRepository):
         query = select(self.model).filter_by(email=email)
         result = await self.session.execute(query)
         model = result.scalars().one()
-        return UserWithHashedPassword.model_validate(model)
+        return UserWithHashedPasswordDTO.model_validate(model)

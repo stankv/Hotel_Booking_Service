@@ -8,13 +8,13 @@ from src.exceptions import (
     RoomAlreadyExistsException,
     FacilityNotFoundException,
 )
-from src.schemas.rooms import RoomAddRequest, RoomPatchRequest
+from src.schemas.rooms import RoomAddRequestDTO, RoomPatchRequestDTO
 
 
 class RoomValidator:
     @staticmethod
     async def validate_room_data(
-        db, room_data: RoomAddRequest, exclude_room_id: int | None = None
+        db, room_data: RoomAddRequestDTO, exclude_room_id: int | None = None
     ) -> None:
         """
         Валидация данных номера (используется при создании и обновлении)
@@ -70,7 +70,7 @@ class RoomValidator:
                     raise FacilityNotFoundException
 
     @staticmethod
-    def clean_room_description(room_data: RoomAddRequest) -> None:
+    def clean_room_description(room_data: RoomAddRequestDTO) -> None:
         """
         Очистка поля description от пробелов
         """
@@ -79,7 +79,7 @@ class RoomValidator:
 
     @staticmethod
     async def validate_partial_room_data(
-        db, room_data: RoomPatchRequest, current_room_data, exclude_room_id: int | None = None
+        db, room_data: RoomPatchRequestDTO, current_room_data, exclude_room_id: int | None = None
     ) -> None:
         """
         Валидация данных номера для частичного обновления

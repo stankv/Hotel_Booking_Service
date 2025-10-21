@@ -1,24 +1,24 @@
 from src.exceptions import ObjectNotFoundException, RoomNotFoundException
-from src.schemas.bookings import BookingAddRequest, BookingAdd
-from src.schemas.hotels import Hotel
-from src.schemas.rooms import Room
+from src.schemas.bookings import BookingAddRequestDTO, BookingAddDTO
+from src.schemas.hotels import HotelDTO
+from src.schemas.rooms import RoomDTO
 from src.services.base import BaseService
 from src.utils.date_validator import validate_dates, check_date_to_after_date_from
 
 
 class BookingService(BaseService):
-    async def add_booking(self, user_id: int, booking_data: BookingAddRequest):
+    async def add_booking(self, user_id: int, booking_data: BookingAddRequestDTO):
         # Валидируем даты бронирования через сервисные исключения
         validate_dates(booking_data.date_from, booking_data.date_to)
         check_date_to_after_date_from(booking_data.date_from, booking_data.date_to)
 
         try:
-            room: Room = await self.db.rooms.get_one(id=booking_data.room_id)
+            room: RoomDTO = await self.db.rooms.get_one(id=booking_data.room_id)
         except ObjectNotFoundException as ex:
             raise RoomNotFoundException from ex
-        hotel: Hotel = await self.db.hotels.get_one(id=room.hotel_id)
+        hotel: HotelDTO = await self.db.hotels.get_one(id=room.hotel_id)
         room_price: int = room.price
-        _booking_data = BookingAdd(
+        _booking_data = BookingAddDTO(
             user_id=user_id,
             price=room_price,
             **booking_data.dict(),
