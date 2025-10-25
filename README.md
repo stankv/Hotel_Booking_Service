@@ -2,12 +2,16 @@
 <img src="https://img.shields.io/badge/Python-black?style=for-the-badge&logo=python&logoColor=yellow"/>&nbsp;
 <img src="https://img.shields.io/badge/FastAPI-black?style=for-the-badge&logo=fastapi&logoColor=009688"/>&nbsp;
 <img src="https://img.shields.io/badge/SQLAlchemy-black?style=for-the-badge&logo=sqlalchemy&logoColor=D71F00"/>&nbsp;
+<img src="https://img.shields.io/badge/Alembic-black?style=for-the-badge&logo=alembic&logoColor=009485"/>&nbsp;
 <img src="https://img.shields.io/badge/PostgreSQL-black?style=for-the-badge&logo=PostgreSQL&logoColor=4169E1"/>&nbsp;
-<img src="https://img.shields.io/badge/Redis-black?style=for-the-badge&logo=Redis&logoColor=FF4438"/>
-<img src="https://img.shields.io/badge/Celery-black?style=for-the-badge&logo=Celery&logoColor=37814A"/>
-<img src="https://img.shields.io/badge/PyTest-black?style=for-the-badge&logo=PyTest&logoColor=0A9EDC"/>
+<img src="https://img.shields.io/badge/Redis-black?style=for-the-badge&logo=Redis&logoColor=FF4438"/>&nbsp;
+<img src="https://img.shields.io/badge/Celery-black?style=for-the-badge&logo=Celery&logoColor=37814A"/>&nbsp;
+<img src="https://img.shields.io/badge/PyTest-black?style=for-the-badge&logo=PyTest&logoColor=0A9EDC"/>&nbsp;
+<img src="https://img.shields.io/badge/Ruff-black?style=for-the-badge&logo=ruff&logoColor=1B8CF3"/>&nbsp;
+<img src="https://img.shields.io/badge/PyRight-black?style=for-the-badge&logo=pyright&logoColor=5EAD66"/>&nbsp;
 <img src="https://img.shields.io/badge/Docker-black?style=for-the-badge&logo=docker&logoColor=#07F"/>&nbsp;
 <img src="https://img.shields.io/badge/Nginx-black?style=for-the-badge&logo=nginx&logoColor=#00b341"/>&nbsp;
+<img src="https://img.shields.io/badge/GitLab_CI-black?style=for-the-badge&logo=gitlab&logoColor=FC6D26"/>&nbsp;
 </div>
 
 
@@ -22,7 +26,7 @@
 - Хеширование паролей
 
 ### 🏨 Управление данными
-- CRUD для отелей, номеров, бронирований
+- CRUD для отелей, номеров, удобств и бронирований
 - Связи many-to-many номера-удобства
 - Валидация данных и бизнес-правил
 
@@ -48,12 +52,13 @@
 - Пагинация результатов
 
 ### 🛡️ Безопасность
-- Валидация всех входящих данных
+- Валидация всех входных данных
 - Хеширование паролей с bcrypt
 - JWT-токены с настройкой времени жизни
 - Защита от SQL-инъекций через SQLAlchemy
 - Валидация MIME-типов и размеров файлов
 - Ограничение количества запросов в секунду на уровне Nginx
+
 
 ## 🚀 Технологии
 
@@ -69,6 +74,7 @@
 - **PyRight** - статический типизатор
 - **Docker** - контейнеризация
 - **Nginx** - прокси и SSL терминация
+
 
 ## 🏗️ Архитектура
 
@@ -99,10 +105,11 @@
 
 ### Принципы проектирования
 1. 🧹 **Чистая Архитектура** - используется многослойная архитектура (Layered Architecture), разделяющая код на независимые слои Domain, Application, Infrastructure, Presentation:
-- **Domain Layer** (`models/`) - Сущности предметной области и бизнес-правила
-- **Application Layer** (`services/`, `schemas/`) - Use Cases и бизнес-логика
-- **Infrastructure Layer** (`repositories/`, `connectors/`) - Внешние системы и БД
-- **Presentation Layer** (`api/`) - API endpoints<br><br>
+
+  - **Domain Layer** (`models/`) - Сущности предметной области и бизнес-правила
+  - **Application Layer** (`services/`, `schemas/`) - Use Cases и бизнес-логика
+  - **Infrastructure Layer** (`repositories/`, `connectors/`) - Внешние системы и БД
+  - **Presentation Layer** (`api/`) - API endpoints<br>
 
   `Presentation Layer (API) → Business Layer (Services) → Data Access Layer (Repositories) → Database`<br><br>
 
@@ -120,15 +127,15 @@
   - Утилиты валидации для повторяющихся проверок
   - Стандартизированные обработчики исключений
   
-  KISS:
+    KISS:
   - Понятная и линейная структура проекта
-  - Минимальное количество абстракций там, где они не нужны
+  - Минимальное количество абстракций, и их отсутствие там где они не нужны
   - Четкое разделение ответственности между компонентами
   - Простые и понятные именования
 
 
 3. ⚡  **SOLID** - Проект следует принципам SOLID:
-  - **Single Responsibility** - каждый класс имеет одну ответственность:
+  - **Single Responsibility** - например, каждый класс имеет одну ответственность:
     - `HotelService` - управление отелями
     - `RoomValidator` - валидация номеров
     - `AuthService` - аутентификация
@@ -158,6 +165,7 @@
 - **Dependency Injection** - внедрение зависимостей
 - **Strategy** - валидаторы как стратегии проверки
 
+
 ## 📊 Логирование
 
 Комплексное логирование с уровнями INFO, DEBUG, ERROR для:
@@ -165,11 +173,13 @@
 - Отладки процессов
 - Отслеживания ошибок
 
+
 ## 🔴 Redis
 
 Используется для двух целей:
 1. **Кэширование** - ускорение ответов API через FastAPI-Cache
 2. **Брокер сообщений** - очередь задач для Celery
+
 
 ## 🔄 Celery и Celery Beat
 
@@ -207,7 +217,7 @@
     JWT_ALGORITHM=HS256
     ACCESS_TOKEN_EXPIRE_MINUTES=30
 
-При необходимости измените значения минимальной длины пароля пользователя, имя и пароль базы данных, время жизни JWT-токена.
+При необходимости измените значения минимальной длины пароля пользователя, имя пользователя и пароль к базе данных, время жизни JWT-токена.
 
 Сгенерируйте значение JWT_SECRET_KEY выполнив команду в терминале:
 
