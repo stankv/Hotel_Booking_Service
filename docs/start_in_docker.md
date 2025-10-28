@@ -6,7 +6,7 @@
 
    Windows: https://sendel.ru/shorts/install-docker-windows/
 
-   Linux: https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository (запустите все команды, которые перечислены в этом разделе)
+   Linux: https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository  (запустите все команды, которые перечислены в этом разделе)
 
    MacOS: https://www.heyvaldemar.net/ustanovka-docker-desktop-na-macos/
 
