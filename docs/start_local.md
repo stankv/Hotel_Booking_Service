@@ -3,13 +3,13 @@
 1. В последней строке файла **src/main.py**  изменить адрес хоста:
 
 
-    if __name__ == "__main__":
-        uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+        if __name__ == "__main__":
+            uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
 
 2. Установить необходимые пакеты и зависимости - выполнить в корне проекта: 
 
 
-    pip install -r requirements.txt
+        pip install -r requirements.txt
 
 3. Установить БД **PostgreSQL**:
 
@@ -22,9 +22,9 @@
    или:
 
 
-    brew install postgresql
-    createuser -s postgres
-    brew services restart postgresql
+        brew install postgresql
+        createuser -s postgres
+        brew services restart postgresql
 
 4. Для работы с БД установить **DBeaver**:
 
@@ -39,7 +39,7 @@
 6. Выполнить команду для применения миграций:
 
 
-    alembic upgrade head
+        alembic upgrade head
 
 7. Установить **Redis**:
 
@@ -56,29 +56,29 @@
    MacOS: 
 
 
-    brew install redis****
+        brew install redis****
 
 8. Установить **Celery**:
 
 
-    pip install celery
+        pip install celery
 
 9. Для запуска приложения выполнить в терминале:
 
 
-    python src/main.py
+        python src/main.py
 
 10. Для запуска **Celery** (worker и beat) в Linux выполнить команду в другом терминале:
 
 
-    celery --app=src.tasks.celery_app:celery_instance worker -l INFO -B
+        celery --app=src.tasks.celery_app:celery_instance worker -l INFO -B
 
 11. Для запуска **Celery** в Windows:
 
 
-    # Если нужен только worker, то выполнить в другом терминале:
-    celery -A src.tasks.celery_app:celery_instance worker -l INFO --pool=solo
-    
-    # Если нужны и worker и beat:
-    celery -A src.tasks.celery_app:celery_instance worker -l INFO --pool=solo    # запуск worker (во 2-м терминале)
-    celery -A src.tasks.celery_app:celery_instance beat -l INFO                  # запуск beat (в 3-м терминале)
+        # Если нужен только worker, то выполнить в другом терминале:
+        celery -A src.tasks.celery_app:celery_instance worker -l INFO --pool=solo
+        
+        # Если нужны и worker и beat:
+        celery -A src.tasks.celery_app:celery_instance worker -l INFO --pool=solo    # запуск worker (во 2-м терминале)
+        celery -A src.tasks.celery_app:celery_instance beat -l INFO                  # запуск beat (в 3-м терминале)
