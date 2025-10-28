@@ -244,7 +244,7 @@
 
 Запуск проекта может быть выполнен локально, или в Docker:
 
-[Запуск проекта локально]()
+[Запуск проекта локально](https://github.com/stankv/Hotel_Booking_Service/blob/main/docs/start_local.md)
 
-[Запуск проекта в Docker]()
+[Запуск проекта в Docker](https://github.com/stankv/Hotel_Booking_Service/blob/main/docs/start_in_docker.md)
 
