@@ -2,12 +2,14 @@
 
 1. В последней строке файла **src/main.py**  изменить адрес хоста:
 
-        if __name__ == "__main__":
+
+    if __name__ == "__main__":
         uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
 
-2. Установить необходимые пакеты и зависимости - выполнить в корне проекта: 
+   2. Установить необходимые пакеты и зависимости - выполнить в корне проекта: 
 
-       pip install -r requirements.txt
+
+    pip install -r requirements.txt
 
 3. Установить БД **PostgreSQL**:
 
@@ -17,7 +19,8 @@
 
    MacOS: https://ploshadka.net/ustanovka-i-podkljuchenie-postgresql-na-mac-os/  
 
-   или
+   или:
+
 
     brew install postgresql
     createuser -s postgres
@@ -74,9 +77,11 @@
 
 11.1 Если нужен только worker, то выполнить в другом терминале:
 
+
     celery -A src.tasks.celery_app:celery_instance worker -l INFO --pool=solo
 
 11.2 Если нужны и worker и beat:
+
 
     celery -A src.tasks.celery_app:celery_instance worker -l INFO --pool=solo    # запуск worker (во 2-м терминале)
     celery -A src.tasks.celery_app:celery_instance beat -l INFO                  # запуск beat (в 3-м терминале)
