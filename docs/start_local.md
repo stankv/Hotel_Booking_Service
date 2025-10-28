@@ -6,7 +6,7 @@
     if __name__ == "__main__":
         uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
 
-   2. Установить необходимые пакеты и зависимости - выполнить в корне проекта: 
+2. Установить необходимые пакеты и зависимости - выполнить в корне проекта: 
 
 
     pip install -r requirements.txt
@@ -75,13 +75,10 @@
 
 11. Для запуска **Celery** в Windows:
 
-11.1 Если нужен только worker, то выполнить в другом терминале:
 
-
+    # Если нужен только worker, то выполнить в другом терминале:
     celery -A src.tasks.celery_app:celery_instance worker -l INFO --pool=solo
-
-11.2 Если нужны и worker и beat:
-
-
+    
+    # Если нужны и worker и beat:
     celery -A src.tasks.celery_app:celery_instance worker -l INFO --pool=solo    # запуск worker (во 2-м терминале)
     celery -A src.tasks.celery_app:celery_instance beat -l INFO                  # запуск beat (в 3-м терминале)
