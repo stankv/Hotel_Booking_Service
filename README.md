@@ -192,21 +192,15 @@
 Для проекта, развернутого локально:
 
     pytest -s -v           # Запуск тестов
-
     ruff check             # Проверка линтинга
-
-    ruff format --check    # Проверка форматирования  
-
+    ruff format --check    # Проверка форматирования
     pyright                # Проверка типов
 
 Для проекта, развернутого в Docker:
 
     docker exec booking_back pytest -s -v           # Запуск тестов
-
     docker exec booking_back ruff check             # Проверка линтинга
-
     docker exec booking_back ruff format --check    # Проверка форматирования
-
     docker exec booking_back pyright                # Проверка типов
 
 
