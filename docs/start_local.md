@@ -11,12 +11,13 @@
 
 3. Установить БД **PostgreSQL**:
 
-Windows: https://selectel.ru/blog/tutorials/ustanovka-postgresql-15-windows/
-Ubuntu: https://firstvds.ru/technology/ustanovka-postgresql-na-ubuntu
+   Windows: https://selectel.ru/blog/tutorials/ustanovka-postgresql-15-windows/
 
-MacOS: https://ploshadka.net/ustanovka-i-podkljuchenie-postgresql-na-mac-os/  
+   Ubuntu: https://firstvds.ru/technology/ustanovka-postgresql-na-ubuntu
 
-или
+   MacOS: https://ploshadka.net/ustanovka-i-podkljuchenie-postgresql-na-mac-os/  
+
+   или
 
     brew install postgresql
     createuser -s postgres
@@ -24,12 +25,13 @@ MacOS: https://ploshadka.net/ustanovka-i-podkljuchenie-postgresql-na-mac-os/ 
 
 4. Для работы с БД установить **DBeaver**:
 
-Windows: https://practicum.yandex.ru/blog/menedzher-baz-dannyh-dbeaver/
-Ubuntu: https://losst.pro/ustanovka-dbeaver-v-ubuntu-22-04
-MacOS: https://dbeaver.io/download/ (скачайте и запустите)
+   Windows: https://practicum.yandex.ru/blog/menedzher-baz-dannyh-dbeaver/
+
+   Ubuntu: https://losst.pro/ustanovka-dbeaver-v-ubuntu-22-04
+
+   MacOS: https://dbeaver.io/download/ (скачайте и запустите)
 
 5. С помощью **DBeaver** создать БД с названием **booking**
-
 
 6. Выполнить команду для применения миграций:
 
@@ -38,18 +40,18 @@ MacOS: https://dbeaver.io/download/ (скачайте и запустите)
 
 7. Установить **Redis**:
 
-Windows:
+   Windows:
 
-Способ 1 (через Chocolatey):  https://skillbox.ru/media/base/kak_ustanovit_redis_v_os_windows_bez_ispolzovaniya_docker/
+   - Способ 1 (через Chocolatey):  https://skillbox.ru/media/base/kak_ustanovit_redis_v_os_windows_bez_ispolzovaniya_docker/
 
-Способ 2 (через архивный репозиторий Redis): 
-https://timeweb.cloud/tutorials/redis/ustanovka-i-nastrojka-redis-dlya-raznyh-os
+   - Способ 2 (через архивный репозиторий Redis): https://timeweb.cloud/tutorials/redis/ustanovka-i-nastrojka-redis-dlya-raznyh-os
 
-Способ 3 (через WSL): https://habr.com/ru/articles/821363/
+   - Способ 3 (через WSL): https://habr.com/ru/articles/821363/
 
-Linux: https://help.reg.ru/support/servery-vps/oblachnyye-servery/ustanovka-programmnogo-obespecheniya/kak-ustanovit-i-nastroit-redis-na-linux#2
+   Linux: https://help.reg.ru/support/servery-vps/oblachnyye-servery/ustanovka-programmnogo-obespecheniya/kak-ustanovit-i-nastroit-redis-na-linux#2
 
-MacOS: 
+   MacOS: 
+
 
     brew install redis****
 

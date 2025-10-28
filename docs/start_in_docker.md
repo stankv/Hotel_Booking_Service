@@ -4,9 +4,11 @@
 
 1. Установить Docker:
 
-Windows: https://sendel.ru/shorts/install-docker-windows/
-Linux: https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository (запустите все команды, которые перечислены в этом разделе)
-MacOS: https://www.heyvaldemar.net/ustanovka-docker-desktop-na-macos/
+   Windows: https://sendel.ru/shorts/install-docker-windows/
+
+   Linux: https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository (запустите все команды, которые перечислены в этом разделе)
+
+   MacOS: https://www.heyvaldemar.net/ustanovka-docker-desktop-na-macos/
 
 2. Создать docker-сеть с названием myNetwork:
 
@@ -76,7 +78,22 @@ MacOS: https://www.heyvaldemar.net/ustanovka-docker-desktop-na-macos/
 
 1. Порты в файле docker-compose.yml должны быть закомментированы
 
-2. Выполнить команду в терминале:
+2. В репозитории версия файла настроек nginx.conf с устанолвленными SSL-сертификатами для production. Нужно изменить его содержимое на:
+
+        events {}
+        
+        http {
+            limit_req_zone $binary_remote_addr zone=mylimit:10m rate=5r/s;
+        
+            server {
+                limit_req zone=mylimit;
+                location / {
+                    proxy_pass http://booking_back:8000/;
+                }
+            }
+        }
+
+3. Выполнить команду в терминале:
 
         docker run --name booking_nginx \
             -v ./nginx.conf:/etc/nginx/nginx.conf \
