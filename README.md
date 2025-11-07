@@ -1,4 +1,4 @@
-<div id="header" align="center">
+<!--<div id="header" align="center">
 <img src="https://img.shields.io/badge/Python-black?style=for-the-badge&logo=python&logoColor=yellow"/>&nbsp;
 <img src="https://img.shields.io/badge/FastAPI-black?style=for-the-badge&logo=fastapi&logoColor=009688"/>&nbsp;
 <img src="https://img.shields.io/badge/SQLAlchemy-black?style=for-the-badge&logo=sqlalchemy&logoColor=D71F00"/>&nbsp;
@@ -12,6 +12,22 @@
 <img src="https://img.shields.io/badge/Docker-black?style=for-the-badge&logo=docker&logoColor=#07F"/>&nbsp;
 <img src="https://img.shields.io/badge/Nginx-black?style=for-the-badge&logo=nginx&logoColor=#00b341"/>&nbsp;
 <img src="https://img.shields.io/badge/GitLab_CI-black?style=for-the-badge&logo=gitlab&logoColor=FC6D26"/>&nbsp;
+</div> -->
+
+<div id="header" align="center">
+![Python](https://img.shields.io/badge/Python-3.8+-blue?style=flat&logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-100000?style=flat&logo=sqlalchemy&logoColor=white&labelColor=gray&color=gray)
+![Alembic](https://img.shields.io/badge/Alembic-100000?style=flat&logo=alembic&logoColor=white&labelColor=gray&color=gray)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat&logo=redis&logoColor=white)
+![Celery](https://img.shields.io/badge/Celery-37814A?style=flat&logo=celery&logoColor=white)
+![Pytest](https://img.shields.io/badge/Pytest-0A9EDC?style=flat&logo=pytest&logoColor=white)
+![Ruff](https://img.shields.io/badge/Ruff-100000?style=flat&logo=ruff&logoColor=white&labelColor=gray&color=gray)
+![Pyright](https://img.shields.io/badge/Pyright-100000?style=flat&logo=pyright&logoColor=white&labelColor=gray&color=gray)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-009639?style=flat&logo=nginx&logoColor=white)
+![GitLab CI](https://img.shields.io/badge/GitLab_CI-FC6D26?style=flat&logo=gitlab&logoColor=white)
 </div>
 
 
