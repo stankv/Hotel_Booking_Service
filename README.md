@@ -14,7 +14,6 @@
 <img src="https://img.shields.io/badge/GitLab_CI-black?style=for-the-badge&logo=gitlab&logoColor=FC6D26"/>&nbsp;
 </div> -->
 
-<div id="header" align="center">
 ![Python](https://img.shields.io/badge/Python-3.8+-blue?style=flat&logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)
 ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-100000?style=flat&logo=sqlalchemy&logoColor=white&labelColor=gray&color=gray)
@@ -28,7 +27,7 @@
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
 ![Nginx](https://img.shields.io/badge/Nginx-009639?style=flat&logo=nginx&logoColor=white)
 ![GitLab CI](https://img.shields.io/badge/GitLab_CI-FC6D26?style=flat&logo=gitlab&logoColor=white)
-</div>
+
 
 
 # Сервис бронирования отелей
