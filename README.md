@@ -14,8 +14,9 @@
 <img src="https://img.shields.io/badge/GitLab_CI-black?style=for-the-badge&logo=gitlab&logoColor=FC6D26"/>&nbsp;
 </div> -->
 
-# <center>Сервис бронирования отелей</center>
+# Сервис бронирования отелей
 
+<p align="justify">
 ![Python](https://img.shields.io/badge/Python-3.8+-blue?style=flat&logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)
 ![Pydantic](https://img.shields.io/badge/Pydantic-E92063?style=flat&logo=pydantic&logoColor=white)
@@ -30,6 +31,7 @@
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
 ![Nginx](https://img.shields.io/badge/Nginx-009639?style=flat&logo=nginx&logoColor=white)
 ![GitLab CI](https://img.shields.io/badge/GitLab_CI-FC6D26?style=flat&logo=gitlab&logoColor=white)
+</p>
 
 Современный REST API для системы бронирования отелей на фреймворке FastAPI с полным стеком технологий.
 
