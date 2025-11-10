@@ -15,7 +15,7 @@
 </div> -->
 
 # Сервис бронирования отелей
-<p align="justify">
+<div align="center">
  
 ![Python](https://img.shields.io/badge/Python-3.8+-blue?style=flat&logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)
@@ -31,7 +31,7 @@
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
 ![Nginx](https://img.shields.io/badge/Nginx-009639?style=flat&logo=nginx&logoColor=white)
 ![GitLab CI](https://img.shields.io/badge/GitLab_CI-FC6D26?style=flat&logo=gitlab&logoColor=white)
-</p>
+</div>
 
 Современный REST API для системы бронирования отелей на фреймворке FastAPI с полным стеком технологий.
 
