@@ -14,7 +14,7 @@
 <img src="https://img.shields.io/badge/GitLab_CI-black?style=for-the-badge&logo=gitlab&logoColor=FC6D26"/>&nbsp;
 </div> -->
 
-# Сервис бронирования отелей
+# <center>Сервис бронирования отелей</center>
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue?style=flat&logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)
