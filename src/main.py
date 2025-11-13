@@ -39,36 +39,6 @@ async def lifespan(app: FastAPI):
     await redis_manager.close()
 
 
-# Функция для добавления HEAD методов ко всем роутерам
-# def add_head_methods_to_all_routes(app: FastAPI):
-#     """Добавляет отдельные HEAD обработчики для всех GET эндпоинтов"""
-#     from fastapi import Response
-#     from fastapi.routing import APIRoute
-#
-#     # Создаем HEAD обработчик для каждого GET эндпоинта
-#     async def head_handler(*args, **kwargs):
-#         return Response(
-#             status_code=200,
-#             headers={
-#                 "Content-Type": "application/json",
-#                 "Allow": ", ".join(route.methods)
-#             }
-#         )
-#
-#     # Добавляем все HEAD роуты в приложение
-#     for route in app.routes:
-#         if isinstance(route, APIRoute) and "GET" in route.methods:
-#             # Добавляем параметры из оригинального роута
-#             app.add_api_route(
-#                 path=route.path,
-#                 endpoint=head_handler,
-#                 methods=["HEAD"],
-#                 include_in_schema=False,
-#                 name=f"{route.name}_head" if route.name else None,
-#                 response_class=Response
-#             )
-
-
 app = FastAPI(docs_url=None, redoc_url=None, lifespan=lifespan)
 
 # CORS middleware
@@ -92,13 +62,10 @@ app.include_router(router_facilities)
 app.include_router(router_bookings)
 app.include_router(router_images)
 
-# Добавляем HEAD методы ко всем роутерам
-# add_head_methods_to_all_routes(app)
 
 # --------------------------------------------------------------------------------------
-# решение проблемы нкорректной работы документации
+# решение проблемы неорректной работы документации
 # https://fastapi.tiangolo.com/how-to/custom-docs-ui-assets/#disable-the-automatic-docs
-
 
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
@@ -123,9 +90,8 @@ async def redoc_html():
         title=app.title + " - ReDoc",  # type: ignore
         redoc_js_url="https://unpkg.com/redoc@next/bundles/redoc.standalone.js",
     )
-
-
 # --------------------------------------------------------------------------------------
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

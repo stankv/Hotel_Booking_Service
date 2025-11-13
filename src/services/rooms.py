@@ -26,7 +26,6 @@ class RoomService(BaseService):
         date_from: date,
         date_to: date,
     ):
-        # Валидируем даты через сервисные исключения
         validate_dates(date_from, date_to)
         check_date_to_after_date_from(date_from, date_to)
 

@@ -25,7 +25,7 @@ class HotelsRepository(BaseRepository):
         location,
         limit,
         offset,
-    ) -> list[HotelDTO]:  # возвращает список pydantic-схем
+    ) -> list[HotelDTO]:
         query = select(HotelsOrm)
         if title:
             query = query.filter(func.lower(HotelsOrm.title).contains(title.strip().lower()))

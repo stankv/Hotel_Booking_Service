@@ -18,7 +18,7 @@ class RoomsFacilitiesRepository(BaseRepository):
     async def set_room_facilities(self, room_id: int, facilities_ids: list[int]) -> None:
         get_current_facilities_ids_query = select(self.model.facility_id).filter_by(
             room_id=room_id
-        )  # select импортируем из алхимии
+        )
         res = await self.session.execute(get_current_facilities_ids_query)
         current_facilities_ids: Sequence[int] = res.scalars().all()
         ids_to_delete: list[int] = list(set(current_facilities_ids) - set(facilities_ids))
